@@ -49,7 +49,7 @@ export const THEME_GROUPS = [
     {
         // 钱怎么变成学堂、人怎么出去读书、病怎么统计
         title: '教育与卫生',
-        ids: ['theme.xingxue', 'theme.gengkuan', 'theme.liumei-youtong', 'theme.jibing-yu-chengshi'],
+        ids: ['theme.xingxue', 'theme.daxue-xiaozhang', 'theme.gengkuan', 'theme.liumei-youtong', 'theme.jibing-yu-chengshi'],
     },
     {
         // 读者自己走一遍的线
