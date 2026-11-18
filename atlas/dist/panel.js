@@ -1,4 +1,5 @@
 import { label, spanOf } from './types.js';
+import { numberBadge } from './numeric.js';
 import { categoryStyle, swatchSvg } from './event-category.js';
 import { resolveSources, sourceNote, sourceTitle } from './sources.js';
 const TYPE_ZH = {
@@ -794,7 +795,7 @@ export class Panel {
             const snip = h.field === 'summary' || h.field === 'body'
                 ? `<span class="snip">${mark(h.text, query)}</span>`
                 : '';
-            return `<li data-id="${e.id}" class="${i === selected ? 'sel' : ''}">${icon}<span class="y">${y}</span>${label(e.labels)}<span class="tag">${typeName}</span>${snip}</li>`;
+            return `<li data-id="${e.id}" class="${i === selected ? 'sel' : ''}">${icon}<span class="y">${y}</span>${label(e.labels)}${badgeHtml(e)}<span class="tag">${typeName}</span>${snip}</li>`;
         })
             .join('');
         this.body.innerHTML = `<ul class="event-list result-list">${items}</ul>`;
@@ -867,7 +868,7 @@ export class Panel {
         el.className = '';
         el.innerHTML = `
       <div class="hover-title">${title}</div>
-      <div class="hover-kind">${kind}${meta ? ' · ' + meta : ''}</div>
+      <div class="hover-kind">${kind}${meta ? ' · ' + meta : ''}${t.id && this.byId.get(t.id) ? badgeHtml(this.byId.get(t.id)) : ''}</div>
       ${summary ? `<p class="hover-sum">${summary}</p>` : ''}
       <div class="hover-hint">点击展开详情</div>`;
     }
@@ -984,3 +985,11 @@ export class Panel {
         });
     }
 }
+/**
+ * 「这一条带的数」的小标标记（§4.344）：检索结果行与悬停卡共用。
+ * 抽成纯函数是为了能脱离 DOM 测（`test/numeric.test.mjs`）。
+ */
+export const badgeHtml = (e) => {
+    const b = numberBadge(e);
+    return b ? `<span class="num-badge">${esc(b.text)}</span>` : '';
+};

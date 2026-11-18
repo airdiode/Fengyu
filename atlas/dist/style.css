@@ -576,6 +576,16 @@ figure.asset .prov { display: block; font-size: 10px; opacity: .8; }
 .rd-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .rd-name { font-size: 14px; font-weight: 600; }
 .rd-lede { font-size: 12.5px; color: #6f6557; line-height: 1.6; }
+/* 检索结果与悬停卡里的小标（§4.344）：同读页那一种，尺寸小一号 */
+.num-badge {
+  margin-left: 6px; padding: 0 6px; border-radius: 9px;
+  font-size: 10.5px; color: #8a3a2a; background: rgba(168, 56, 42, .07);
+  border: 1px solid rgba(168, 56, 42, .18); white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.result-list li .num-badge { vertical-align: 1px; }
+.hover-kind .num-badge { margin-left: 8px; }
+
 /* 条目行右边的小标：赔款 / 伤亡 / 死亡 / 指标 / 采用年份，只写一个数 */
 .rd-badge {
   justify-self: end; align-self: center; white-space: nowrap;
