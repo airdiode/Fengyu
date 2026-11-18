@@ -12,23 +12,44 @@ import { YEAR_FROM, YEAR_TO, yearStep } from './year-nav.js';
 import { groupThemes } from './theme-groups.js';
 import { FeedbackForm } from './feedback.js';
 async function boot() {
-    const data = await loadDataset();
+    /** 启动阶段写进 <html data-stage>：首屏探针（tools/perf-probe.mjs）按这些点量时间 */
+    const markStage = (name) => {
+        document.documentElement.dataset.stage = name;
+        // 同时记一条 Performance 标记：探针读它拿精确时间，不必靠轮询撞大运（§4.335）
+        if (typeof performance !== 'undefined' && performance.mark)
+            performance.mark('fengyu:' + name);
+    };
+    markStage('boot');
+    // 三样东西互不依赖，全部在同一个 tick 里发出去；**发出去的顺序就是优先级**：
+    // 底图轮廓（100 KB）→ 内容（首屏要点得动它）→ 疆域快照 → 辅助图层。
+    // 原来是一路 await 下去，每个文件一次往返；而本地 dev 服务器是 HTTP/1.1（每域 6 条连接），
+    // 后发的请求会排在 19 份图层后面——线上走 HTTP/2 虽然能多路复用，但这个顺序也是对的（§4.335）。
+    const basePromise = fetch('public/china.geojson').then((r) => r.json());
+    const baseDocPromise = fetch('public/geo/base-1840.json').then((r) => r.json());
+    const dataPromise = loadDataset();
+    const territoriesPromise = fetch('public/territories.json').then((r) => r.json());
+    // 辅助图层一共 19 份、约 4.8 MB，最后到也没关系：实体先画，图层到了再叠上去
+    const geoPromise = loadGeo().catch(() => null);
+    const data = await dataPromise;
+    markStage('data');
     const map = new MapView(document.getElementById('map'));
-    const base = await (await fetch('public/china.geojson')).json();
+    const base = await basePromise;
     map.setBase(ringsFromGeoJson(base));
-    const terr = await (await fetch('public/territories.json')).json();
-    map.setTerritories(terr);
-    const baseDoc = (await (await fetch('public/geo/base-1840.json')).json());
+    const baseDoc = (await baseDocPromise);
     map.setTerritoryBase(baseDoc.rings, { note: baseDoc.note, tiers: baseDoc.tiers });
-    const geo = await loadGeo();
-    map.setGeo(geo);
+    // 实体不等辅助图层：2,091 条点先画出来，读者这时已经能点、能搜
+    map.setEntities(data.entities);
+    markStage('entities');
+    // 疆域快照只在没有 1840 基线时才兜底，所以永远最后叠
+    void territoriesPromise
+        .then((terr) => map.setTerritories(terr))
+        .catch(() => { });
     // 势力范围图例：只列这一年实际存在的列强
     const powerKey = document.getElementById('power-key');
     const renderPowerKey = (_y) => {
         // 殖民地不再着色（只留国名标注），色块图例会误导，直接不显示
         powerKey.innerHTML = '';
     };
-    map.setEntities(data.entities);
     const panel = new Panel(document.getElementById('panel-head'), document.getElementById('panel-body'), data.byId, data.sources, document.getElementById('hover-body'), data.climate);
     // 专题读页：整块浮层，点条目进详情，返回时回到读页
     const reader = new Reader(document.getElementById('reader'), data.byId, (id, from) => {
@@ -679,7 +700,12 @@ async function boot() {
         ovlOpacity.disabled = !ok;
         ovlHint.textContent = ok ? '' : `未找到校准图${overlay.error ? '：' + overlay.error : ''}`;
     };
-    ovlOn.addEventListener('change', () => overlay.set({ on: ovlOn.checked }));
+    ovlOn.addEventListener('change', () => {
+        // 图是 15 MB 的 PNG，第一次点亮才取；取的过程里开关先保持按下，图到了自动重画
+        if (ovlOn.checked)
+            void overlay.loadImage();
+        overlay.set({ on: ovlOn.checked });
+    });
     ovlOpacity.addEventListener('input', () => overlay.set({ opacity: Number(ovlOpacity.value) / 100 }));
     // ?lon=&lat=&span=：把视图定到某处（比对/截图用）
     {
@@ -692,11 +718,13 @@ async function boot() {
         }
     }
     syncOverlayInfo();
-    void overlay.load().then(() => {
-        // ?overlay=1 直接在加载后打开校准图，方便截图/分享定位
+    // 只读 sidecar（几百字节）决定开关能不能点；真图等点亮开关或 ?overlay=1 时再取（§4.335）
+    void overlay.loadMeta().then(() => {
+        // ?overlay=1 直接打开校准图，方便截图/分享定位
         if (overlay.meta && /[?&]overlay=1\b/.test(location.search)) {
             ovlOn.checked = true;
             overlay.set({ on: true });
+            void overlay.loadImage();
         }
         syncOverlayInfo();
     });
@@ -733,6 +761,13 @@ async function boot() {
         legend.innerHTML = parts.join('');
     };
     syncYear();
+    markStage('first-paint');
+    // 辅助图层到了：叠上去，tier/主张线/割让面这些依赖 geo 的东西这时才画得出来
+    const geo = await geoPromise;
+    if (geo) {
+        map.setGeo(geo);
+        markStage('geo');
+    }
     // ?year=1930：直接跳到某年（截图/比对用）
     {
         const y = Number(new URLSearchParams(location.search).get('year'));
@@ -741,6 +776,7 @@ async function boot() {
             syncYear();
         }
     }
+    markStage('done');
     console.log('[fengyu] loaded', data.manifest.total, 'entities', label({ 'zh-Hans': 'ok' }));
 }
 boot().catch((err) => {

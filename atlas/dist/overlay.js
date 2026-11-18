@@ -20,26 +20,21 @@ export class MapOverlay {
     onChange;
     meta = null;
     img = null;
+    /** loadImage 的进度句柄，重复点亮开关不会重复下载 */
+    loading = null;
     opts = { on: false, opacity: 0.55 };
     /** 加载失败（图不在本地）时给 UI 一句说明 */
     error = null;
     constructor(onChange) {
         this.onChange = onChange;
     }
-    async load() {
+    /** 只读 sidecar（几百字节）：开关能不能点、缺图时提示什么，都靠它 */
+    async loadMeta() {
         try {
             const res = await fetch('public/geo/roc-1934-overlay.json');
             if (!res.ok)
                 throw new Error(`sidecar ${res.status}`);
             this.meta = (await res.json());
-            const img = new Image();
-            // decode() 在无头 Chrome 里对大图会一直挂起，改用 onload/onerror
-            await new Promise((resolve, reject) => {
-                img.onload = () => resolve();
-                img.onerror = () => reject(new Error(`图片加载失败：${this.meta?.src}`));
-                img.src = this.meta.src;
-            });
-            this.img = img;
             this.error = null;
         }
         catch (err) {
@@ -49,6 +44,45 @@ export class MapOverlay {
             this.opts.on = false;
         }
         this.onChange?.();
+    }
+    /**
+     * 读真图（抠图版 PNG，本地 15 MB）。
+     * **不能放在启动流程里**：它比整站其它资源加起来还大一個量级，
+     * 而默认是不开这个图层的（§4.335）。开关第一次点亮、或 URL 带 `?overlay=1` 时才取。
+     * 重复调用安全：已经有图/正在读就直接复用同一个 Promise。
+     */
+    async loadImage() {
+        if (this.img)
+            return;
+        if (this.loading)
+            return this.loading;
+        this.loading = (async () => {
+            if (!this.meta)
+                await this.loadMeta();
+            if (!this.meta)
+                return;
+            try {
+                const img = new Image();
+                // decode() 在无头 Chrome 里对大图会一直挂起，改用 onload/onerror
+                await new Promise((resolve, reject) => {
+                    img.onload = () => resolve();
+                    img.onerror = () => reject(new Error(`图片加载失败：${this.meta?.src}`));
+                    img.src = this.meta.src;
+                });
+                this.img = img;
+                this.error = null;
+            }
+            catch (err) {
+                this.error = String(err instanceof Error ? err.message : err);
+                this.img = null;
+                this.opts.on = false;
+            }
+            finally {
+                this.loading = null;
+            }
+            this.onChange?.();
+        })();
+        return this.loading;
     }
     set(patch) {
         Object.assign(this.opts, patch);

@@ -56,6 +56,32 @@ const emptyGeo = () => ({
     claims: [], cessions: [], cessionLines: [], sphereLines: [], leagues: [], sealanes: [], southSea: null, yellowriver: [], taiping: [],
     rivers: [], lakes: [], admin1: [], relief: [], wall: [], cities: [],
 });
+/**
+ * 辅助图层的文件清单，**顺序就是 Promise.all 的取值顺序**，改一处要改两处。
+ * 导出是为了让测试对得上磁盘：拼错文件名时线上只会静默少画一层（get() 吞错），
+ * 本地测不出来（`test/geo-files.test.mjs` 守着「清单 ↔ public/geo 目录」）。
+ */
+export const GEO_FILES = [
+    'land.json',
+    'land-detail.json',
+    'lakes-detail.json',
+    'rivers-detail.json',
+    'polities.json',
+    'spheres.json',
+    'claims.json',
+    'taiping.json',
+    'cessions.json',
+    'cession-lines.json',
+    'sealanes.json',
+    'southsea.json',
+    'yellowriver.json',
+    'rivers.json',
+    'lakes.json',
+    'admin1.json',
+    'relief.json',
+    'wall.json',
+    'cities.json',
+];
 export async function loadGeo(base = 'public/geo') {
     const geo = emptyGeo();
     const get = async (name) => {
@@ -69,27 +95,7 @@ export async function loadGeo(base = 'public/geo') {
             return null;
         }
     };
-    const [land, landDetail, lakesDetail, riversDetail, polities, spheres, claims, taiping, cessions, cessionLines, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities] = await Promise.all([
-        get('land.json'),
-        get('land-detail.json'),
-        get('lakes-detail.json'),
-        get('rivers-detail.json'),
-        get('polities.json'),
-        get('spheres.json'),
-        get('claims.json'),
-        get('taiping.json'),
-        get('cessions.json'),
-        get('cession-lines.json'),
-        get('sealanes.json'),
-        get('southsea.json'),
-        get('yellowriver.json'),
-        get('rivers.json'),
-        get('lakes.json'),
-        get('admin1.json'),
-        get('relief.json'),
-        get('wall.json'),
-        get('cities.json'),
-    ]);
+    const [land, landDetail, lakesDetail, riversDetail, polities, spheres, claims, taiping, cessions, cessionLines, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities] = await Promise.all(GEO_FILES.map((name) => get(name)));
     if (Array.isArray(land))
         geo.land = land;
     if (Array.isArray(landDetail))
