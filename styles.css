@@ -268,3 +268,6 @@ img { max-width: 100%; height: auto; display: block; }
 .poem p { margin: 0; }
 .poem em { font-style: normal; color: var(--ochre-deep); }
 .poem-src { color: var(--muted); font-size: 13px; margin: 0; }
+
+/* 更新日志：页尾那句制度说明 */
+.changelog-note { color: var(--muted); font-size: 14px; margin-top: 18px; }

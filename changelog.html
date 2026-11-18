@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>更新日志 — 风雨如磐</title>
+<meta name="description" content="风雨如磐的更新日志：每次发布改了什么、为什么改。">
+<meta name="theme-color" content="#faf8f2">
+<link rel="icon" type="image/svg+xml" href="assets/mark.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip" href="#main">跳到主要内容</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <img src="assets/mark.svg" alt="" width="26" height="26">
+      <span>风雨如磐</span>
+    </a>
+    <nav>
+      <a href="./">首页</a>
+      <a href="atlas/"><b>进入地图</b></a>
+      <a class="home" href="https://airdiode.github.io/" target="_blank" rel="noreferrer">作者主页 ↗</a>
+      <a class="gh" href="https://github.com/airdiode/Fengyu">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap narrow">
+      <div class="section-head">
+        <h2>更新日志</h2>
+        <p>每次发布记一条：改了什么、为什么改。旧的留在下面，不删。</p>
+      </div>
+      <div class="prose">
+        <h3>2026-11-18</h3>
+        <ul>
+          <li><b>地图开放。</b>应用上线到 <a href="atlas/">atlas/</a>：1840–1949 全量 2,091 条实体、1,139 条出处、33 条专题线，条目点开有摘要、出处、相关人物与「可以去看看」的点位。</li>
+          <li><b>首屏加速。</b>上线后实测串行加载 136 个内容分片要 20 秒以上；改为并发加载并在发布时合并成单个文件，线上首次出图降到约 6 秒。</li>
+          <li><b>纠错与投稿。</b>任意条目末尾有「这一条有误？」，页脚有「报错与投稿」；表单自动带上条目编号、年份与数据版本。资料与长文走 contact@airdiode.com。</li>
+          <li><b>名字的出处。</b>首页新增一节，写清「风雨如磐」出自鲁迅《自题小像》（1903）。</li>
+          <li><b>导航与页脚。</b>顶栏加「作者主页 ↗」；页脚加联系邮箱。</li>
+          <li><b>仓库。</b>README 重写，补 NOTICE（第三方数据条款），加 topics 与站点主页地址。</li>
+        </ul>
+        <p class="changelog-note">从这一天起，每天收工前发一版，并在这里记一条。</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p><b>风雨如磐</b> · 近代中国的信息底图 · 1840–1949</p>
+    <p class="fine">
+      感谢米沙的建议与鼓励。联系：<a href="mailto:contact@airdiode.com">contact@airdiode.com</a>。
+      <a href="./">首页</a> · <a href="atlas/">进入地图</a> ·
+      <a href="https://github.com/airdiode/Fengyu">GitHub</a> ·
+      <a href="https://airdiode.github.io/">airdiode</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
