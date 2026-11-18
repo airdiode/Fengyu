@@ -1,0 +1,75 @@
+风雨如磐 · 站点与数据说明
+========================
+
+本仓库（airdiode/Fengyu）发布官网页面与地图应用的运行产物（atlas/）。
+第三方数据条款如下，与开发仓库 fengyu/ 的 NOTICE 一致。
+
+风雨如磐 v2 · Fengyu
+====================
+
+本仓库是非商业用途的开源项目：代码 MIT 风格自由使用，第三方数据按各自条款。
+
+代码 / Code
+-----------
+fengyu/ 的代码（src/、tools/、test/）由本项目编写，供学习与二次开发使用。
+
+史料内容 / Historical content
+-----------------------------
+content/ 由 jiangshan-modern 迁移而来。jiangshan-modern 是 Jiangshan Atlas
+（江山时序，https://github.com/DeanChensj/jiangshan-map，GPL-3.0）的衍生作品，
+近代史事件、人物、铁路、商埠等数据由本项目整理。
+data/ 下的灾祸、机构、外国人、作品、货币、专题为本项目新写，正文依据所注书目与词条。
+
+第三方地理数据 / Third-party geodata
+------------------------------------
+1. 疆域快照 Territory snapshots（public/territories.json）
+   CHGIS Version 6 — © Fairbank Center for Chinese Studies, Harvard University
+   and Center for Historical Geographical Studies, Fudan University, 2016
+   以及 Robert M. Hartwell China Historical GIS（Harvard Dataverse, doi:10.7910/DVN/29302）
+   条款：仅限学术、非商业使用；不得再分发原始数据集；不适用 GPL。
+   Terms: academic, non-commercial use only; no redistribution of the original datasets.
+   本项目只发布裁剪后的轮廓。
+
+2. 蒙古/青海藩部界线 Vassal boundaries（data/geo/qing-mongolia-chgis.json）
+   同样来自 CHGIS Version 6 的「1820 年府级界线」（该层按《中国历史地图集》第 8 册数字化），
+   Harvard Dataverse doi:10.7910/DVN/2K4FHX，文件 v6_1820_pref_pgn_gbk.zip。
+   经 tools/derive-chgis.py 反投影（西安 1980 GK 19 带）、简化后存成本项目的环。
+   引用：CHGIS, Version: 6. © Fairbank Center for Chinese Studies, Harvard University
+   and Center for Historical Geographical Studies, Fudan University, 2016.
+   条款：学术、非商业使用；不得再分发原始数据集。本项目只取 16 个单元、简化后发布。
+
+3. 俄国/苏联分阶段国界 Russian/Soviet borders by period（data/geo/ru-stages.json）
+   CShapes 2.0 — Weidmann & Gleditsch; Schvitz et al. 2022（ETH Zürich / PRIO）。
+   学术免费；1500 余条「国家—时期」记录中的 6 条俄国记录，经 Douglas–Peucker 0.05° 简化后使用。
+   本项目不发布原始数据集。
+
+4. 底图与辅助图层 Basemap & reference layers（public/china.geojson、public/geo/）
+   Natural Earth, 1:110m / 1:50m（naturalearthdata.com）
+   公有领域 / Public domain。大陆轮廓、河流、湖泊、现代省级界线、山系与高原
+   均取自 Natural Earth，经 tools/build-geo.mjs 裁剪抽稀。
+   注意：**不画现代国界**——邻国版图在变，按现代国界画会误导；周边国名见
+   public/geo/polities.json（手写，按年份取当时国名）。
+   势力范围（public/geo/spheres.json）中的境外殖民地用现代国界近似：
+   伪满洲国用现代黑吉辽三省近似，伊犁占领区为手绘，
+   在华租借地为手绘，仅供示意，不作边界依据。
+   国境线主张（public/geo/claims.json）依据当时中央政府的说法整理，
+   与实控边界（public/territories.json）分开存放；两者不一致处（1912–1946 外蒙、
+   唐努乌梁海）在图上以虚线单独表示，不代表任何现实政治立场。
+
+5. 长城线条 Great Wall line（public/geo/wall.json）
+   本项目手绘示意（按明代关隘与走向连线），不是测绘数据，不可用于定位。
+
+6. 南海断续线 South China Sea dash line（public/geo/southsea.json）
+   九段线上取自 OpenStreetMap 关系 3939323（https://www.openstreetmap.org/relation/3939323/），
+   © OpenStreetMap contributors，ODbL 1.0。北部湾的两段为本项目按 1947 年《南海诸岛位置图》
+   走向手绘（十一段线中后被移除的部分）。
+   该线表示当时政府的主张，不代表本项目立场。
+
+7. 字体 Fonts
+   Noto Serif SC / Source Han Serif — SIL Open Font License 1.1
+
+再分发 / Redistribution
+----------------------
+public/geo/ 下是可再分发的 Natural Earth 衍生数据（含 ODbL 的 OSM 九段线，再分发须同样保留
+ODbL 与署名）；public/territories.json 是
+CHGIS/Hartwell 的衍生物，再分发时请保留本文件并遵守其非商业条款。
