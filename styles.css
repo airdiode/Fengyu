@@ -66,6 +66,15 @@ img { max-width: 100%; height: auto; display: block; }
 .site-header nav a { color: var(--muted); }
 .site-header nav a:hover { color: var(--ink); text-decoration: none; }
 .site-header nav a.gh { color: var(--ochre-deep); }
+/* 作者主页：外部入口，做成描边小胶囊，和站内链接区分开 */
+.site-header nav a.home {
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 11px;
+  white-space: nowrap;
+}
+.site-header nav a.home:hover { border-color: var(--ochre-deep); color: var(--ochre-deep); }
 
 /* ---------- hero ---------- */
 
@@ -209,7 +218,9 @@ img { max-width: 100%; height: auto; display: block; }
 
 
 @media (max-width: 640px) {
-  .site-header nav a:not(.gh) { display: none; }
+  /* 窄屏只留「作者主页」这一个外链（GitHub 页脚还有），否则胶囊会被挤出屏幕 */
+  .site-header nav a:not(.home) { display: none; }
+  .site-header nav a.home { padding: 2px 9px; font-size: 12px; }
   .site-header .wrap { height: 58px; }
   .stats { gap: 12px 26px; }
   .stats b { font-size: 22px; }
