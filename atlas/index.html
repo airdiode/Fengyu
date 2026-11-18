@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>风雨如磐 · 中国近代史知识库</title>
+    <link rel="stylesheet" href="dist/style.css" />
+    <!-- 纠错与投稿：endpoint 留空则「提交」按钮会打开 GitHub 新建 issue 页（预填）；
+         填上 Worker 地址（见 docs/feedback.md）后改为站内直提，读者不需要 GitHub 账号。 -->
+    <meta name="feedback-endpoint" content="" />
+    <meta name="feedback-repo" content="airdiode/Fengyu" />
+    <meta name="feedback-email" content="contact@airdiode.com" />
+  </head>
+  <body>
+    <header id="topbar">
+      <h1 class="brand">风雨如磐<span class="brand-sub">1840 – 1949</span></h1>
+      <div id="controls">
+        <div id="search-box">
+          <input
+            id="search-input"
+            type="search"
+            placeholder="搜人物 / 事件 / 地点（按 / 聚焦）"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <select id="search-filter" title="按类型或事件类别过滤">
+            <option value="all">全部</option>
+            <option value="type:event">事件</option>
+            <option value="type:person">人物</option>
+            <option value="type:organization">组织</option>
+            <option value="type:place">地点</option>
+            <option value="type:route">路线</option>
+            <option value="type:front">战线</option>
+            <optgroup label="事件类别" id="search-cats"></optgroup>
+          </select>
+          <button id="search-clear" type="button" title="清除（Esc）" aria-label="清除">×</button>
+        </div>
+        <div id="theme-menu">
+          <button id="theme-toggle" type="button" title="按专题阅读（按内容分组）" aria-expanded="false" aria-haspopup="true">专题</button>
+          <div id="theme-panel" hidden></div>
+        </div>
+        <span class="ctl-label">年份</span>
+        <input id="year-input" type="number" min="1840" max="1949" value="1840" step="1" />
+        <div id="layer-menu">
+          <button id="layer-toggle" type="button" title="图层与图例（点击展开）" aria-expanded="false">图层</button>
+          <div id="layer-box" hidden>
+            <div id="layer-list"></div>
+            <div id="power-key"></div>
+            <div id="overlay-box">
+              <label class="layer-item"><input type="checkbox" id="ovl-on" /><i class="layer-swatch" style="background:#8a7a5a"></i>1934 校准图</label>
+              <div class="ovl-row"><span>透明</span><input type="range" id="ovl-opacity" min="5" max="100" value="55" /></div>
+              <div id="ovl-hint" class="ovl-info"></div>
+            </div>
+            <div id="line-key">
+              <span><i class="lk-solid"></i>清朝 1840 年实控基线（快照）</span>
+              <span><i class="lk-dash"></i>主张国境线</span>
+              <span><i class="lk-vassal"></i>藩部（札萨克／内属）</span>
+              <span><i class="lk-claim"></i>主张（未实控）</span>
+            </div>
+          </div>
+        </div>
+        <button id="help-open" type="button" title="操作与卡片用法（?）">帮助</button>
+      </div>
+    </header>
+    <main id="stage">
+      <canvas id="map"></canvas>
+      <div id="climate-card" hidden></div>
+      <div id="cursor-tag" hidden></div>
+      <aside id="side" hidden>
+        <button id="panel-close" type="button" aria-label="关闭详情" title="关闭（Esc）" hidden>×</button>
+        <section id="panel" hidden>
+          <div id="panel-head"></div>
+          <div id="panel-body"></div>
+        </section>
+        <section id="hover-panel" hidden>
+          <div id="hover-head">悬停详情</div>
+          <div id="hover-body"></div>
+        </section>
+      </aside>
+      <section id="reader" hidden aria-label="专题读页">
+        <div class="reader-backdrop" data-reader-close></div>
+        <article class="reader-sheet" role="dialog" aria-modal="true">
+          <button class="reader-close" type="button" data-reader-close aria-label="关闭读页" title="关闭（Esc）">×</button>
+          <div id="reader-body"></div>
+        </article>
+      </section>
+    </main>
+    <footer id="timeline" title="悬停展开完整时间轴；移开自动收起">
+      <div id="timeline-track">
+        <canvas id="timeline-canvas"></canvas>
+      </div>
+      <div id="footer-row">
+        <div id="legend"></div>
+        <div id="attrib"><button id="timeline-toggle" type="button" aria-expanded="false" aria-controls="timeline-track">展开时间轴 ▴</button> · 底图：Natural Earth（公有领域）· 疆域：CHGIS V6 / Hartwell（非商业）· <button id="feedback-open" type="button">报错与投稿</button> · <button id="about-open" type="button">关于本项目</button></div>
+      </div>
+    </footer>
+    <dialog id="help" class="pop" aria-labelledby="help-title">
+      <div class="pop-inner">
+        <button class="pop-close" data-close="help" type="button" aria-label="关闭">×</button>
+        <h2 id="help-title">使用帮助</h2>
+        <p class="about-sub">地图操作 · 卡片与详情 · 键盘</p>
+
+        <h3>地图</h3>
+        <ul>
+          <li><b>缩放</b>：滚轮；<b>平移</b>：按住拖动；<b>回全国</b>：双击地图空白处，或点「图层」里的重置。</li>
+          <li><b>换年份</b>：拖底部时间轴，或按 <kbd>←</kbd>/<kbd>→</kbd> 一年、<kbd>Shift</kbd>+<kbd>←</kbd>/<kbd>→</kbd> 十年；打开时停在 1840 年。鼠标在时间轴上移动时，会先显示该位置对应的年份（虚线预览，点一下才跳过去）。</li>
+          <li><b>展开时间轴</b>：底部平时只留主进度条，鼠标移上去（或点「展开时间轴」）向上展开年号、时期与灾荒条，移开自动收起。</li>
+          <li><b>搜索</b>：顶栏输入人物、事件、地点（<kbd>/</kbd> 聚焦），可按类型与事件类别筛选，命中项在图上高亮并对准镜头。</li>
+          <li><b>图层</b>：右上「图层」菜单开关山川、水系、城市、国名、势力范围、主张国境线、黄河故道、贸易航线、1934 校准图等。</li>
+          <li><b>比例尺</b>：左下角横杠 + 年份行。比例按视图中心纬度算（墨卡托高纬放大，跨 36° 纬度的全国图上下差约 15%），缩放时按 1/2/5 档跳。</li>
+          <li><b>灾荒条</b>：时间轴最下面一排竖条是 1840–1911 的逐年报灾条数（据《中国三千年气象记录总集》第四册，OCR 抽取），颜色是当年最多的灾种；换年时左上角会跳出「本年灾情」小结。</li>
+        </ul>
+
+        <h3>卡片与详情</h3>
+        <ul>
+          <li><b>悬停</b>：鼠标移到点、线、边界或区域上，右侧弹出摘要卡（正文最多三行），底部提示「点击展开详情」。</li>
+          <li><b>人物点</b>：实心点是籍贯/出生地，空心点是某一年的活动地（只在对应年份出现，名字也跟着走）；详情顶部会列出「籍贯/出生地 · 活动地」。</li>
+          <li><b>点开</b>：点一下展开详情卡。事件、人物是完整条目（含参考出处）；国境线、割让面、势力范围、租界与控制区则是说明加「数据源与精度」附注。</li>
+          <li><b>收起</b>：详情卡展开后摘要卡自动收起。这时鼠标扫过别的点，只在鼠标旁点一个只写标题的小标签，不挡卡片。</li>
+          <li><b>关闭</b>：点地图空白处、按 <kbd>Esc</kbd>，或点详情卡右上角的 ×。</li>
+          <li><b>返回专题</b>：从专题列表点进某个成员后，详情卡顶部有「← 返回专题 · …」，点一下回到刚才的章节列表。</li>
+        </ul>
+
+        <h3>键盘</h3>
+        <table>
+          <tbody>
+            <tr><th><kbd>←</kbd> / <kbd>→</kbd></th><td>换一年</td></tr>
+            <tr><th><kbd>Shift</kbd> + <kbd>←</kbd>/<kbd>→</kbd></th><td>换十年</td></tr>
+            <tr><th><kbd>/</kbd></th><td>聚焦搜索框</td></tr>
+            <tr><th><kbd>Enter</kbd> / <kbd>↓</kbd></th><td>搜索结果里跳到下一条 / 打开</td></tr>
+            <tr><th><kbd>Esc</kbd></th><td>关闭详情卡、图层菜单或搜索建议</td></tr>
+            <tr><th><kbd>?</kbd></th><td>打开这个帮助</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </dialog>
+
+    <dialog id="about" class="pop" aria-labelledby="about-title">
+      <div class="pop-inner">
+        <button class="pop-close" data-close="about" type="button" aria-label="关闭">×</button>
+        <h2 id="about-title">关于「风雨如磐」</h2>
+        <p class="about-sub">1840–1949 年中国近代史读史地图 · v2 · 2026-11</p>
+
+        <h3>项目简介</h3>
+        <p>「风雨如磐」把 1840–1949 年的疆域、事件、人物、机构、路线放在一张可拖动的地图上。名字取自鲁迅 1903 年《自题小像》：「灵台无计逃神矢，风雨如磐暗故园。」</p>
+        <p>它不是游戏，也不是边界测绘：底图固定为 1840 年清朝实控基线，1858 年以后的割让、占领、租借、傀儡政权与势力范围用叠加层表达；虚线是当时中央政府的主张国境，实线是实控与割让，两者不一致处（1912–1946 外蒙、唐努乌梁海，1895–1945 台湾）分开表示。</p>
+
+        <h3>怎么读</h3>
+        <p>时间轴、搜索、悬停摘要、点开详情、图层的具体用法都收在顶栏的「<b>帮助</b>」里（按 <kbd>?</kbd> 也能打开）。</p>
+
+        <h3>数据来源</h3>
+        <table>
+          <tbody>
+            <tr><th>地理底图</th><td>海岸、河流、湖泊、山川、省界：Natural Earth 1:110m / 1:50m / 1:10m（公有领域）</td></tr>
+            <tr><th>疆域与府级几何</th><td>CHGIS V6（哈佛燕京学社与复旦大学，学术非商业）与 Hartwell CHGIS（Harvard Dataverse）；快照的汇编与手工调整见「江山时序」atlas</td></tr>
+            <tr><th>俄/苏分期国界</th><td>CShapes 2.0（学术免费）</td></tr>
+            <tr><th>南海断续线</th><td>OpenStreetMap（ODbL）；北部湾两段按 1947 年《南海诸岛位置图》手绘</td></tr>
+            <tr><th>1934 年校准底图</th><td>《中华民国新地图》（申报馆，1934），仅作配准对照，不作边界依据</td></tr>
+            <tr><th>历史地理参考</th><td>谭其骧主编《中国历史地图集》</td></tr>
+            <tr><th>事件 / 人物 / 机构 / 作品</th><td>中文维基百科、教材与参考书目；每条实体在详情里列出处</td></tr>
+          </tbody>
+        </table>
+
+        <h3>参考资料</h3>
+        <p class="about-note" id="about-ref-note">按书名汇总；作者、年份/出版信息有则列，具体用于哪条见各条目详情里的出处。</p>
+        <ul id="about-refs" class="about-refs"></ul>
+
+        <h3>制作方式</h3>
+        <ul>
+          <li>内容写在 <code>data/*.json</code>，经 <code>tools/migrate.mjs</code> 与旧项目数据合并；<code>tools/normalize.mjs</code> 合并重复条目、校正类别、收敛标签；<code>pnpm validate</code> 校验、<code>pnpm test</code> 回归。</li>
+          <li>地图是 TypeScript + Canvas 2D，没有框架和打包器；标注由独立求解器排布（贪心 + 局部回溯）。</li>
+          <li>地理图层由 <code>tools/</code> 下的 Python / Node 管线从公开数据生成，可复现。<span id="about-stats">条目与出处数在页面加载时统计。</span></li>
+        </ul>
+
+        <h3>难点与局限</h3>
+        <ul>
+          <li><b>边界没有测绘底本。</b>1840 基线是示意性复原：西段（卡伦线、帕米尔、藏南）按《清史地图集》和 1934 年《中华民国新地图》手工修过，仍是 0.1° 级；东段外东北按现代中俄边界裁，再用割让面表示「未承认的割让」。不能当测绘线用。</li>
+          <li><b>割让面与占领区多为描线/手绘。</b>伊犁西界依《清史地图集》p.152 描线，瑷珲、乌苏里、西北界约按条约文字和旧图取界；不同史料对同一条界线有异说，图上取其一。</li>
+          <li><b>主张与实控分开，但不做裁判。</b>1912–1946 的外蒙、唐努乌梁海，1895–1945 的台湾，都按「当时中央政府怎么说」画成虚线，和实控分开；1946 年承认外蒙独立后仍按当时说法处理。这是史实呈现，不是法律判断。</li>
+          <li><b>内容远非全集。</b>战争细节、地方史、边疆、女性与日常生活覆盖不均；部分旧迁移条目出处是二手，已尽量补权威/一手来源，但做不到每条都核对原档。</li>
+          <li><b>分类是规则+人工。</b>事件 10 类先按关键词分，再人工校正；边界事件（兵变、政变、涉外冲突）仍可能归错。标签已收敛，但长尾仍在。</li>
+          <li><b>标注会挤。</b>长三角、京津冀、广州这些密集区，求解器只能保证「已放下的不重叠」，放不下的会被挤掉或缩短，不能保证每个点都有字。</li>
+          <li><b>技术边界。</b>Canvas 2D、无 WebGL、无播放、无 3D；移动端未专门适配；1840 年以前不通史回填。</li>
+        </ul>
+
+        <h3>反馈与投稿</h3>
+        <p>发现某条史实有误、出处不对、地图画错，或者手上有更可靠的资料——都欢迎告诉我们。站内表单会自动带上条目编号、年份与数据版本，省得来回问。</p>
+        <ul>
+          <li><b>纠错：</b>点开任意一条的「这一条有误？」，或页脚的「报错与投稿」。配好后可直接在页面提交，反馈会公开出现在项目的 GitHub issue 列表里，处理后会在提交记录里写明。</li>
+          <li><b>资料与建议：</b>写到 <a href="mailto:contact@airdiode.com">contact@airdiode.com</a>；长篇材料、扫描件、书目都走这个邮箱。</li>
+          <li><b>请别在反馈里写个人信息。</b>公开的 issue 谁都能看见；联系方式一格可以不填。</li>
+        </ul>
+
+        <h3>缘起与开放</h3>
+        <p>项目最早从<a href="https://github.com/DeanChensj/jiangshan-map" target="_blank" rel="noreferrer">江山时序 Jiangshan Atlas</a>（GPL-3.0）出发，尝试改造成近代史版本；因原架构把时间、空间、内容写死在一起，后改为重写实现，只保留它的疆域汇编与「年表 + 地图」的交互范式，不沿用其代码。</p>
+        <ul>
+          <li>代码：MIT 风格，可自由学习与二次开发。</li>
+          <li>内容：每条实体在详情里列出处；引用请保留出处与本项目名。</li>
+          <li>第三方数据：Natural Earth 公有领域；CHGIS / Hartwell 仅限学术非商业、不得再分发原始数据集；CShapes 学术免费；OSM 遵循 ODbL。</li>
+          <li>边界为示意性复原，不是测绘成果；主张线只表示当时中央政府的说法，不代表本项目立场。</li>
+        </ul>
+
+        <h3>免责声明</h3>
+        <ul class="about-disclaimer">
+          <li>本项目是非商业的个人读史工具，不是学术出版物、不是测绘成果，也不是政治声明。</li>
+          <li>图中所有边界、主张线、势力范围、租借地、路线与点位均为示意性复原，<b>不得用于导航、定位、法律、行政或任何决策用途</b>。</li>
+          <li>历史叙述力求中性并注明出处，但史料本身有异说、整理可能有误；以详情里所列出处为准。发现错误欢迎在项目仓库指出。</li>
+          <li>涉及当代领土与主权之处，只呈现当时中央政府的说法，不代表作者或本项目的立场，也不构成对任何现实边界、政权或主张的承认或否认。</li>
+          <li>第三方数据与地图版权归各自所有者：CHGIS / Hartwell 仅限学术非商业，OSM 遵循 ODbL，Natural Earth 为公有领域；如权利人认为使用不当，请联系调整或删除。</li>
+          <li>内容会随修订变化，不另行通知；引用、转载请保留出处与本项目名。</li>
+        </ul>
+      </div>
+    </dialog>
+    <dialog id="feedback" class="pop" aria-labelledby="feedback-title">
+      <div class="pop-inner">
+        <button class="pop-close" data-close="feedback" type="button" aria-label="关闭">×</button>
+        <h2 id="feedback-title">报错与投稿</h2>
+        <p class="about-sub">带 * 的必填；条目、年份与数据版本会自动附上。</p>
+        <div class="fb-row"><span class="fb-label">相关条目</span><output id="fb-entity">（未指定）</output></div>
+        <label class="fb-row"><span class="fb-label">类型 *</span>
+          <select id="fb-kind">
+            <option>史实有误</option>
+            <option>出处不对或缺失</option>
+            <option>地图或图层画错</option>
+            <option>功能与体验</option>
+            <option>资料提供</option>
+            <option>其他</option>
+          </select>
+        </label>
+        <label class="fb-row"><span class="fb-label">问题描述 *</span>
+          <textarea id="fb-detail" rows="5" maxlength="4000" placeholder="哪一条、哪里不对、应该是怎样"></textarea>
+        </label>
+        <label class="fb-row"><span class="fb-label">依据（书名 + 页码 / 档案 / 链接）</span>
+          <input id="fb-basis" type="text" placeholder="例：《清史稿》卷四十二，第 1234 页" />
+        </label>
+        <label class="fb-row"><span class="fb-label">联系方式（可选）</span>
+          <input id="fb-contact" type="text" autocomplete="off" placeholder="愿意留就留，便于回问依据" />
+        </label>
+        <input id="fb-hp" class="fb-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <label class="fb-agree"><input id="fb-agree" type="checkbox" /> 我知道这条反馈会公开出现在 GitHub 上（联系方式可不填）</label>
+        <div class="fb-actions">
+          <button id="fb-submit" type="button" class="fb-primary">提交</button>
+          <button id="fb-mail" type="button">用邮件发送</button>
+        </div>
+        <p id="fb-status" class="fb-status" role="status"></p>
+      </div>
+    </dialog>
+    <script type="module" src="dist/main.js"></script>
+  </body>
+</html>

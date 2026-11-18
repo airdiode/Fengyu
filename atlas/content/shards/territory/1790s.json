@@ -1,0 +1,1 @@
+{"key":"territory/1790s","entities":[{"id":"territory.1796","type":"territory","labels":{"zh-Hans":"清"},"time":{"kind":"interval","start":"1796","end":"1850","precision":"year"},"space":{"areas":[{"geometry":{"ref":"territories.json#1796"}}]},"sources":[{"ref":"source.legacy.territory"}],"summary":{"zh-Hans":"1796 年版图"},"tags":["疆域"]}]}

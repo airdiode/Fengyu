@@ -239,3 +239,10 @@ img { max-width: 100%; height: auto; display: block; }
   .site-header { background: color-mix(in srgb, var(--paper) 86%, transparent); }
   .button { color: #1a1712; }
 }
+
+/* 首屏入口：主按钮 + 一句说明 */
+.hero-cta { margin: 22px 0 0; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.hero-hint { color: var(--muted); font-size: 14px; }
+.button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); margin-left: 10px; }
+.button.ghost:hover { background: rgba(0,0,0,.04); }
+@media (max-width: 720px) { .button.ghost { margin-left: 0; } }

@@ -1,0 +1,1233 @@
+{
+  "version": "0.1.0",
+  "builtAt": "2026-11-17T17:39:09.186Z",
+  "counts": {
+    "event": 574,
+    "person": 1061,
+    "organization": 47,
+    "place": 64,
+    "route": 50,
+    "front": 10,
+    "territory": 26,
+    "group": 43,
+    "asset": 1,
+    "theme": 33,
+    "technology": 13,
+    "instrument": 6,
+    "institution": 131,
+    "work": 27,
+    "practice": 5
+  },
+  "total": 2091,
+  "shards": [
+    {
+      "key": "asset/0s",
+      "entities": 1,
+      "bytes": 523,
+      "timeSpan": null
+    },
+    {
+      "key": "event/1600s",
+      "entities": 1,
+      "bytes": 862,
+      "timeSpan": null
+    },
+    {
+      "key": "event/1830s",
+      "entities": 1,
+      "bytes": 1223,
+      "timeSpan": null
+    },
+    {
+      "key": "event/1840s",
+      "entities": 31,
+      "bytes": 19185,
+      "timeSpan": [
+        1840,
+        1849
+      ]
+    },
+    {
+      "key": "event/1850s",
+      "entities": 28,
+      "bytes": 17790,
+      "timeSpan": [
+        1850,
+        1859
+      ]
+    },
+    {
+      "key": "event/1860s",
+      "entities": 31,
+      "bytes": 20563,
+      "timeSpan": [
+        1860,
+        1869
+      ]
+    },
+    {
+      "key": "event/1870s",
+      "entities": 30,
+      "bytes": 22086,
+      "timeSpan": [
+        1870,
+        1878
+      ]
+    },
+    {
+      "key": "event/1880s",
+      "entities": 30,
+      "bytes": 18797,
+      "timeSpan": [
+        1880,
+        1889
+      ]
+    },
+    {
+      "key": "event/1890s",
+      "entities": 51,
+      "bytes": 35334,
+      "timeSpan": [
+        1890,
+        1899
+      ]
+    },
+    {
+      "key": "event/1900s",
+      "entities": 85,
+      "bytes": 48413,
+      "timeSpan": [
+        1900,
+        1909
+      ]
+    },
+    {
+      "key": "event/1910s",
+      "entities": 84,
+      "bytes": 56601,
+      "timeSpan": [
+        1910,
+        1919
+      ]
+    },
+    {
+      "key": "event/1920s",
+      "entities": 66,
+      "bytes": 48712,
+      "timeSpan": [
+        1920,
+        1929
+      ]
+    },
+    {
+      "key": "event/1930s",
+      "entities": 70,
+      "bytes": 51976,
+      "timeSpan": [
+        1930,
+        1939
+      ]
+    },
+    {
+      "key": "event/1940s",
+      "entities": 65,
+      "bytes": 49986,
+      "timeSpan": [
+        1940,
+        1949
+      ]
+    },
+    {
+      "key": "event/1950s",
+      "entities": 1,
+      "bytes": 599,
+      "timeSpan": [
+        1954,
+        1954
+      ]
+    },
+    {
+      "key": "front/1850s",
+      "entities": 5,
+      "bytes": 3412,
+      "timeSpan": [
+        1853,
+        1858
+      ]
+    },
+    {
+      "key": "front/1860s",
+      "entities": 5,
+      "bytes": 3061,
+      "timeSpan": [
+        1860,
+        1864
+      ]
+    },
+    {
+      "key": "group/1800s",
+      "entities": 1,
+      "bytes": 568,
+      "timeSpan": [
+        1807,
+        1807
+      ]
+    },
+    {
+      "key": "group/1840s",
+      "entities": 2,
+      "bytes": 1021,
+      "timeSpan": [
+        1840,
+        1840
+      ]
+    },
+    {
+      "key": "group/1850s",
+      "entities": 3,
+      "bytes": 1573,
+      "timeSpan": [
+        1850,
+        1853
+      ]
+    },
+    {
+      "key": "group/1860s",
+      "entities": 4,
+      "bytes": 2160,
+      "timeSpan": [
+        1860,
+        1864
+      ]
+    },
+    {
+      "key": "group/1870s",
+      "entities": 2,
+      "bytes": 1044,
+      "timeSpan": [
+        1870,
+        1875
+      ]
+    },
+    {
+      "key": "group/1880s",
+      "entities": 1,
+      "bytes": 507,
+      "timeSpan": [
+        1888,
+        1888
+      ]
+    },
+    {
+      "key": "group/1890s",
+      "entities": 5,
+      "bytes": 2784,
+      "timeSpan": [
+        1890,
+        1895
+      ]
+    },
+    {
+      "key": "group/1900s",
+      "entities": 6,
+      "bytes": 3224,
+      "timeSpan": [
+        1900,
+        1900
+      ]
+    },
+    {
+      "key": "group/1910s",
+      "entities": 5,
+      "bytes": 3170,
+      "timeSpan": [
+        1912,
+        1917
+      ]
+    },
+    {
+      "key": "group/1920s",
+      "entities": 3,
+      "bytes": 1949,
+      "timeSpan": [
+        1921,
+        1928
+      ]
+    },
+    {
+      "key": "group/1930s",
+      "entities": 5,
+      "bytes": 2807,
+      "timeSpan": [
+        1930,
+        1937
+      ]
+    },
+    {
+      "key": "group/1940s",
+      "entities": 6,
+      "bytes": 3311,
+      "timeSpan": [
+        1946,
+        1949
+      ]
+    },
+    {
+      "key": "institution/1050s",
+      "entities": 1,
+      "bytes": 930,
+      "timeSpan": [
+        1055,
+        1055
+      ]
+    },
+    {
+      "key": "institution/1120s",
+      "entities": 1,
+      "bytes": 1680,
+      "timeSpan": [
+        1128,
+        1128
+      ]
+    },
+    {
+      "key": "institution/1630s",
+      "entities": 1,
+      "bytes": 863,
+      "timeSpan": [
+        1639,
+        1639
+      ]
+    },
+    {
+      "key": "institution/1840s",
+      "entities": 1,
+      "bytes": 624,
+      "timeSpan": [
+        1844,
+        1844
+      ]
+    },
+    {
+      "key": "institution/1850s",
+      "entities": 3,
+      "bytes": 3412,
+      "timeSpan": [
+        1850,
+        1859
+      ]
+    },
+    {
+      "key": "institution/1860s",
+      "entities": 15,
+      "bytes": 11563,
+      "timeSpan": [
+        1861,
+        1869
+      ]
+    },
+    {
+      "key": "institution/1870s",
+      "entities": 6,
+      "bytes": 8246,
+      "timeSpan": [
+        1870,
+        1878
+      ]
+    },
+    {
+      "key": "institution/1880s",
+      "entities": 12,
+      "bytes": 5654,
+      "timeSpan": [
+        1880,
+        1888
+      ]
+    },
+    {
+      "key": "institution/1890s",
+      "entities": 15,
+      "bytes": 12742,
+      "timeSpan": [
+        1890,
+        1898
+      ]
+    },
+    {
+      "key": "institution/1900s",
+      "entities": 10,
+      "bytes": 7274,
+      "timeSpan": [
+        1901,
+        1909
+      ]
+    },
+    {
+      "key": "institution/1910s",
+      "entities": 24,
+      "bytes": 22227,
+      "timeSpan": [
+        1911,
+        1919
+      ]
+    },
+    {
+      "key": "institution/1920s",
+      "entities": 27,
+      "bytes": 19853,
+      "timeSpan": [
+        1920,
+        1929
+      ]
+    },
+    {
+      "key": "institution/1930s",
+      "entities": 10,
+      "bytes": 8696,
+      "timeSpan": [
+        1930,
+        1938
+      ]
+    },
+    {
+      "key": "institution/1940s",
+      "entities": 4,
+      "bytes": 2468,
+      "timeSpan": [
+        1940,
+        1948
+      ]
+    },
+    {
+      "key": "institution/1950s",
+      "entities": 1,
+      "bytes": 577,
+      "timeSpan": [
+        1958,
+        1958
+      ]
+    },
+    {
+      "key": "instrument/1840s",
+      "entities": 1,
+      "bytes": 485,
+      "timeSpan": [
+        1840,
+        1840
+      ]
+    },
+    {
+      "key": "instrument/1850s",
+      "entities": 1,
+      "bytes": 543,
+      "timeSpan": [
+        1854,
+        1854
+      ]
+    },
+    {
+      "key": "instrument/1880s",
+      "entities": 1,
+      "bytes": 463,
+      "timeSpan": [
+        1889,
+        1889
+      ]
+    },
+    {
+      "key": "instrument/1910s",
+      "entities": 1,
+      "bytes": 533,
+      "timeSpan": [
+        1914,
+        1914
+      ]
+    },
+    {
+      "key": "instrument/1930s",
+      "entities": 1,
+      "bytes": 470,
+      "timeSpan": [
+        1935,
+        1935
+      ]
+    },
+    {
+      "key": "instrument/1940s",
+      "entities": 1,
+      "bytes": 480,
+      "timeSpan": null
+    },
+    {
+      "key": "organization/1720s",
+      "entities": 1,
+      "bytes": 736,
+      "timeSpan": [
+        1720,
+        1720
+      ]
+    },
+    {
+      "key": "organization/1760s",
+      "entities": 1,
+      "bytes": 579,
+      "timeSpan": [
+        1760,
+        1760
+      ]
+    },
+    {
+      "key": "organization/1780s",
+      "entities": 1,
+      "bytes": 636,
+      "timeSpan": [
+        1780,
+        1780
+      ]
+    },
+    {
+      "key": "organization/1790s",
+      "entities": 1,
+      "bytes": 584,
+      "timeSpan": [
+        1796,
+        1796
+      ]
+    },
+    {
+      "key": "organization/1840s",
+      "entities": 2,
+      "bytes": 1318,
+      "timeSpan": [
+        1843,
+        1849
+      ]
+    },
+    {
+      "key": "organization/1850s",
+      "entities": 10,
+      "bytes": 6127,
+      "timeSpan": [
+        1850,
+        1856
+      ]
+    },
+    {
+      "key": "organization/1860s",
+      "entities": 4,
+      "bytes": 2820,
+      "timeSpan": [
+        1860,
+        1867
+      ]
+    },
+    {
+      "key": "organization/1870s",
+      "entities": 2,
+      "bytes": 1357,
+      "timeSpan": [
+        1870,
+        1877
+      ]
+    },
+    {
+      "key": "organization/1890s",
+      "entities": 7,
+      "bytes": 4240,
+      "timeSpan": [
+        1890,
+        1898
+      ]
+    },
+    {
+      "key": "organization/1900s",
+      "entities": 10,
+      "bytes": 5926,
+      "timeSpan": [
+        1901,
+        1909
+      ]
+    },
+    {
+      "key": "organization/1910s",
+      "entities": 3,
+      "bytes": 1925,
+      "timeSpan": [
+        1911,
+        1916
+      ]
+    },
+    {
+      "key": "organization/1920s",
+      "entities": 3,
+      "bytes": 3241,
+      "timeSpan": [
+        1925,
+        1927
+      ]
+    },
+    {
+      "key": "organization/1940s",
+      "entities": 2,
+      "bytes": 1532,
+      "timeSpan": null
+    },
+    {
+      "key": "person/1750s",
+      "entities": 1,
+      "bytes": 754,
+      "timeSpan": [
+        1754,
+        1754
+      ]
+    },
+    {
+      "key": "person/1770s",
+      "entities": 3,
+      "bytes": 2130,
+      "timeSpan": [
+        1772,
+        1776
+      ]
+    },
+    {
+      "key": "person/1780s",
+      "entities": 11,
+      "bytes": 10014,
+      "timeSpan": [
+        1781,
+        1789
+      ]
+    },
+    {
+      "key": "person/1790s",
+      "entities": 9,
+      "bytes": 5583,
+      "timeSpan": [
+        1790,
+        1797
+      ]
+    },
+    {
+      "key": "person/1800s",
+      "entities": 11,
+      "bytes": 8871,
+      "timeSpan": [
+        1800,
+        1809
+      ]
+    },
+    {
+      "key": "person/1810s",
+      "entities": 19,
+      "bytes": 21674,
+      "timeSpan": [
+        1810,
+        1819
+      ]
+    },
+    {
+      "key": "person/1820s",
+      "entities": 32,
+      "bytes": 30132,
+      "timeSpan": [
+        1820,
+        1828
+      ]
+    },
+    {
+      "key": "person/1830s",
+      "entities": 53,
+      "bytes": 46492,
+      "timeSpan": [
+        1830,
+        1839
+      ]
+    },
+    {
+      "key": "person/1840s",
+      "entities": 73,
+      "bytes": 52865,
+      "timeSpan": [
+        1840,
+        1849
+      ]
+    },
+    {
+      "key": "person/1850s",
+      "entities": 56,
+      "bytes": 51220,
+      "timeSpan": [
+        1850,
+        1859
+      ]
+    },
+    {
+      "key": "person/1860s",
+      "entities": 65,
+      "bytes": 71922,
+      "timeSpan": [
+        1860,
+        1869
+      ]
+    },
+    {
+      "key": "person/1870s",
+      "entities": 99,
+      "bytes": 108141,
+      "timeSpan": [
+        1870,
+        1879
+      ]
+    },
+    {
+      "key": "person/1880s",
+      "entities": 132,
+      "bytes": 142457,
+      "timeSpan": [
+        1880,
+        1889
+      ]
+    },
+    {
+      "key": "person/1890s",
+      "entities": 144,
+      "bytes": 147146,
+      "timeSpan": [
+        1890,
+        1899
+      ]
+    },
+    {
+      "key": "person/1900s",
+      "entities": 196,
+      "bytes": 131176,
+      "timeSpan": [
+        1900,
+        1909
+      ]
+    },
+    {
+      "key": "person/1910s",
+      "entities": 153,
+      "bytes": 74575,
+      "timeSpan": [
+        1910,
+        1919
+      ]
+    },
+    {
+      "key": "person/1920s",
+      "entities": 3,
+      "bytes": 3311,
+      "timeSpan": [
+        1920,
+        1920
+      ]
+    },
+    {
+      "key": "person/1930s",
+      "entities": 1,
+      "bytes": 490,
+      "timeSpan": [
+        1930,
+        1930
+      ]
+    },
+    {
+      "key": "place/1420s",
+      "entities": 1,
+      "bytes": 1167,
+      "timeSpan": [
+        1429,
+        1429
+      ]
+    },
+    {
+      "key": "place/1840s",
+      "entities": 20,
+      "bytes": 10873,
+      "timeSpan": [
+        1840,
+        1844
+      ]
+    },
+    {
+      "key": "place/1850s",
+      "entities": 7,
+      "bytes": 3593,
+      "timeSpan": [
+        1851,
+        1858
+      ]
+    },
+    {
+      "key": "place/1860s",
+      "entities": 5,
+      "bytes": 2373,
+      "timeSpan": [
+        1860,
+        1861
+      ]
+    },
+    {
+      "key": "place/1870s",
+      "entities": 4,
+      "bytes": 1836,
+      "timeSpan": [
+        1876,
+        1876
+      ]
+    },
+    {
+      "key": "place/1880s",
+      "entities": 4,
+      "bytes": 3132,
+      "timeSpan": [
+        1880,
+        1885
+      ]
+    },
+    {
+      "key": "place/1890s",
+      "entities": 14,
+      "bytes": 7736,
+      "timeSpan": [
+        1890,
+        1899
+      ]
+    },
+    {
+      "key": "place/1900s",
+      "entities": 9,
+      "bytes": 4211,
+      "timeSpan": [
+        1902,
+        1907
+      ]
+    },
+    {
+      "key": "practice/1630s",
+      "entities": 2,
+      "bytes": 1871,
+      "timeSpan": [
+        1635,
+        1636
+      ]
+    },
+    {
+      "key": "practice/1840s",
+      "entities": 1,
+      "bytes": 520,
+      "timeSpan": [
+        1840,
+        1840
+      ]
+    },
+    {
+      "key": "practice/1860s",
+      "entities": 1,
+      "bytes": 706,
+      "timeSpan": [
+        1860,
+        1860
+      ]
+    },
+    {
+      "key": "practice/1880s",
+      "entities": 1,
+      "bytes": 1882,
+      "timeSpan": [
+        1889,
+        1889
+      ]
+    },
+    {
+      "key": "route/1840s",
+      "entities": 1,
+      "bytes": 850,
+      "timeSpan": [
+        1842,
+        1842
+      ]
+    },
+    {
+      "key": "route/1850s",
+      "entities": 3,
+      "bytes": 5438,
+      "timeSpan": [
+        1853,
+        1857
+      ]
+    },
+    {
+      "key": "route/1860s",
+      "entities": 3,
+      "bytes": 2981,
+      "timeSpan": [
+        1862,
+        1865
+      ]
+    },
+    {
+      "key": "route/1870s",
+      "entities": 2,
+      "bytes": 2277,
+      "timeSpan": [
+        1875,
+        1876
+      ]
+    },
+    {
+      "key": "route/1880s",
+      "entities": 2,
+      "bytes": 2320,
+      "timeSpan": [
+        1881,
+        1881
+      ]
+    },
+    {
+      "key": "route/1890s",
+      "entities": 2,
+      "bytes": 3748,
+      "timeSpan": [
+        1896,
+        1898
+      ]
+    },
+    {
+      "key": "route/1900s",
+      "entities": 21,
+      "bytes": 23093,
+      "timeSpan": [
+        1900,
+        1909
+      ]
+    },
+    {
+      "key": "route/1910s",
+      "entities": 5,
+      "bytes": 4900,
+      "timeSpan": [
+        1910,
+        1915
+      ]
+    },
+    {
+      "key": "route/1920s",
+      "entities": 2,
+      "bytes": 2469,
+      "timeSpan": [
+        1923,
+        1923
+      ]
+    },
+    {
+      "key": "route/1930s",
+      "entities": 6,
+      "bytes": 6050,
+      "timeSpan": [
+        1934,
+        1939
+      ]
+    },
+    {
+      "key": "route/1940s",
+      "entities": 3,
+      "bytes": 2565,
+      "timeSpan": [
+        1942,
+        1945
+      ]
+    },
+    {
+      "key": "technology/1840s",
+      "entities": 1,
+      "bytes": 1019,
+      "timeSpan": [
+        1844,
+        1844
+      ]
+    },
+    {
+      "key": "technology/1860s",
+      "entities": 1,
+      "bytes": 1155,
+      "timeSpan": [
+        1865,
+        1865
+      ]
+    },
+    {
+      "key": "technology/1870s",
+      "entities": 2,
+      "bytes": 3718,
+      "timeSpan": [
+        1871,
+        1874
+      ]
+    },
+    {
+      "key": "technology/1880s",
+      "entities": 3,
+      "bytes": 7619,
+      "timeSpan": [
+        1882,
+        1883
+      ]
+    },
+    {
+      "key": "technology/1890s",
+      "entities": 1,
+      "bytes": 1571,
+      "timeSpan": [
+        1896,
+        1896
+      ]
+    },
+    {
+      "key": "technology/1900s",
+      "entities": 1,
+      "bytes": 2164,
+      "timeSpan": [
+        1908,
+        1908
+      ]
+    },
+    {
+      "key": "technology/1910s",
+      "entities": 1,
+      "bytes": 963,
+      "timeSpan": [
+        1914,
+        1914
+      ]
+    },
+    {
+      "key": "technology/1920s",
+      "entities": 3,
+      "bytes": 3395,
+      "timeSpan": [
+        1922,
+        1923
+      ]
+    },
+    {
+      "key": "territory/1790s",
+      "entities": 1,
+      "bytes": 350,
+      "timeSpan": [
+        1796,
+        1796
+      ]
+    },
+    {
+      "key": "territory/1850s",
+      "entities": 11,
+      "bytes": 5229,
+      "timeSpan": [
+        1851,
+        1859
+      ]
+    },
+    {
+      "key": "territory/1860s",
+      "entities": 7,
+      "bytes": 3177,
+      "timeSpan": [
+        1860,
+        1864
+      ]
+    },
+    {
+      "key": "territory/1880s",
+      "entities": 1,
+      "bytes": 350,
+      "timeSpan": [
+        1881,
+        1881
+      ]
+    },
+    {
+      "key": "territory/1890s",
+      "entities": 2,
+      "bytes": 662,
+      "timeSpan": [
+        1895,
+        1898
+      ]
+    },
+    {
+      "key": "territory/1910s",
+      "entities": 1,
+      "bytes": 359,
+      "timeSpan": [
+        1912,
+        1912
+      ]
+    },
+    {
+      "key": "territory/1930s",
+      "entities": 2,
+      "bytes": 680,
+      "timeSpan": [
+        1931,
+        1932
+      ]
+    },
+    {
+      "key": "territory/1940s",
+      "entities": 1,
+      "bytes": 359,
+      "timeSpan": [
+        1945,
+        1945
+      ]
+    },
+    {
+      "key": "theme/1630s",
+      "entities": 1,
+      "bytes": 6129,
+      "timeSpan": [
+        1639,
+        1639
+      ]
+    },
+    {
+      "key": "theme/1830s",
+      "entities": 1,
+      "bytes": 4986,
+      "timeSpan": [
+        1839,
+        1839
+      ]
+    },
+    {
+      "key": "theme/1840s",
+      "entities": 14,
+      "bytes": 88588,
+      "timeSpan": [
+        1840,
+        1847
+      ]
+    },
+    {
+      "key": "theme/1850s",
+      "entities": 1,
+      "bytes": 6124,
+      "timeSpan": [
+        1851,
+        1851
+      ]
+    },
+    {
+      "key": "theme/1860s",
+      "entities": 2,
+      "bytes": 13299,
+      "timeSpan": [
+        1861,
+        1861
+      ]
+    },
+    {
+      "key": "theme/1870s",
+      "entities": 2,
+      "bytes": 10721,
+      "timeSpan": [
+        1870,
+        1876
+      ]
+    },
+    {
+      "key": "theme/1890s",
+      "entities": 3,
+      "bytes": 23146,
+      "timeSpan": [
+        1891,
+        1898
+      ]
+    },
+    {
+      "key": "theme/1900s",
+      "entities": 3,
+      "bytes": 18516,
+      "timeSpan": [
+        1901,
+        1902
+      ]
+    },
+    {
+      "key": "theme/1910s",
+      "entities": 5,
+      "bytes": 22787,
+      "timeSpan": [
+        1911,
+        1912
+      ]
+    },
+    {
+      "key": "theme/1940s",
+      "entities": 1,
+      "bytes": 10067,
+      "timeSpan": [
+        1949,
+        1949
+      ]
+    },
+    {
+      "key": "work/1850s",
+      "entities": 2,
+      "bytes": 1105,
+      "timeSpan": [
+        1853,
+        1859
+      ]
+    },
+    {
+      "key": "work/1900s",
+      "entities": 2,
+      "bytes": 786,
+      "timeSpan": [
+        1903,
+        1905
+      ]
+    },
+    {
+      "key": "work/1910s",
+      "entities": 3,
+      "bytes": 1789,
+      "timeSpan": [
+        1912,
+        1918
+      ]
+    },
+    {
+      "key": "work/1920s",
+      "entities": 1,
+      "bytes": 447,
+      "timeSpan": [
+        1921,
+        1921
+      ]
+    },
+    {
+      "key": "work/1930s",
+      "entities": 14,
+      "bytes": 5244,
+      "timeSpan": [
+        1931,
+        1939
+      ]
+    },
+    {
+      "key": "work/1940s",
+      "entities": 5,
+      "bytes": 1898,
+      "timeSpan": [
+        1941,
+        1948
+      ]
+    }
+  ]
+}
