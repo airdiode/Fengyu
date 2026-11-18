@@ -257,5 +257,4 @@ img { max-width: 100%; height: auto; display: block; }
 .poem { margin: 0 0 12px; font-family: var(--serif); font-size: clamp(20px, 2.6vw, 28px); line-height: 1.9; }
 .poem p { margin: 0; }
 .poem em { font-style: normal; color: var(--ochre-deep); }
-.poem-src { color: var(--muted); font-size: 13px; margin: 0 0 26px; }
-.name-note { max-width: 640px; margin: 0 auto; color: var(--ink-soft); line-height: 1.95; }
+.poem-src { color: var(--muted); font-size: 13px; margin: 0; }
