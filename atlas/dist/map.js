@@ -112,6 +112,8 @@ export class MapView {
     /** 点中县点：打开该县 1840–1911 的全部报灾记录 */
     onClimatePick = () => { };
     dragging = false;
+    /** 细节层缺失时的一次性回调（视野转进东亚） */
+    onDetailNeeded = null;
     last = [0, 0];
     constructor(canvas) {
         this.canvas = canvas;
@@ -1018,6 +1020,12 @@ export class MapView {
         ctx.fillStyle = '#e2eaee';
         ctx.fillRect(0, 0, vw, vh);
         const g0 = this.geo;
+        // 细节层按窗口裁：世界视野起步时根本没取，转进东亚再补一次（只通知一次）
+        if (g0 && !g0.landDetail.length && this.onDetailNeeded && this.wantsDetail()) {
+            const fn = this.onDetailNeeded;
+            this.onDetailNeeded = null;
+            fn();
+        }
         // 大陆垫底：只画一整块陆地，不画国界（邻国版图在变，画现代国界反而是错的）
         if (g0?.land.length) {
             ctx.fillStyle = '#e7e2d6';
@@ -2271,9 +2279,31 @@ export class MapView {
     riverColor(r) {
         return r <= 1 ? 'rgba(112,152,180,.82)' : r === 2 ? 'rgba(130,168,194,.68)' : 'rgba(146,180,202,.58)';
     }
+    /**
+     * 东亚细节窗口（10m 图层覆盖的范围）。
+     * 细节层是按窗口裁的：视野里看不到这块就不取（§4.337）。
+     */
+    static DETAIL_BOX = [70, 15, 140, 55];
+    /** 视野里现在看得到东亚吗？决定要不要去取 10m 细节层 */
+    wantsDetail() {
+        const { w, h } = this.viewport();
+        if (!w || !h)
+            return true;
+        const [x1, y1, x2, y2] = MapView.DETAIL_BOX;
+        const [ax, ay] = screenOf(this.cam, w, h, mercX(x1), mercY(y2));
+        const [bx, by] = screenOf(this.cam, w, h, mercX(x2), mercY(y1));
+        return !(bx < 0 || ax > w || by < 0 || ay > h);
+    }
+    /** 细节层还没取、但视野转进东亚了：通知一次（main.ts 去取，取回后 redraw） */
+    setDetailHandler(fn) {
+        this.onDetailNeeded = fn;
+    }
     /** 把绘制范围限制在细节窗口之外（窗口内交给 10m 图层）；窗口完全不可见时返回 false */
     clipOutsideDetail(vw, vh) {
-        const [x1, y1, x2, y2] = [70, 15, 140, 55];
+        // 细节层没到（世界视野起步时就是不给）：别把窗口挖空，粗层整块画
+        if (!this.geo?.landDetail?.length)
+            return false;
+        const [x1, y1, x2, y2] = MapView.DETAIL_BOX;
         const [ax, ay] = screenOf(this.cam, vw, vh, mercX(x1), mercY(y2));
         const [bx, by] = screenOf(this.cam, vw, vh, mercX(x2), mercY(y1));
         if (bx < 0 || ax > vw || by < 0 || ay > vh)

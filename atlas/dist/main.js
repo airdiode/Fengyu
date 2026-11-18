@@ -6,7 +6,7 @@ import { Reader } from './reader.js';
 import { label, spanOf } from './types.js';
 import { CATEGORY_ORDER, EVENT_CATEGORY, swatchSvg } from './event-category.js';
 import { parseFilter, searchEntities } from './search.js';
-import { GEO_LAYERS, layersAt, loadColonies, loadGeo } from './geo-layers.js';
+import { applyDetail, applyYearLayers, ensureYearLayers, fetchDetailLayers, fetchYearLayers, GEO_LAYERS, layersAt, loadColonies, loadGeo, } from './geo-layers.js';
 import { MapOverlay } from './overlay.js';
 import { YEAR_FROM, YEAR_TO, yearStep } from './year-nav.js';
 import { groupThemes } from './theme-groups.js';
@@ -27,9 +27,19 @@ async function boot() {
     const basePromise = fetch('public/china.geojson').then((r) => r.json());
     const baseDocPromise = fetch('public/geo/base-1840.json').then((r) => r.json());
     const dataPromise = loadDataset();
+    // 起始年份（`?year=1930` 截图/比对用）：要在取「按年图层」之前定下来，
+    // 免得先按 1840 取一份、再为 1930 补一份（§4.337）
+    let startYear = YEAR_FROM;
+    {
+        const y = Number(new URLSearchParams(location.search).get('year'));
+        if (Number.isFinite(y) && y > 0)
+            startYear = Math.max(YEAR_FROM, Math.min(YEAR_TO, Math.round(y)));
+    }
     const territoriesPromise = fetch('public/territories.json').then((r) => r.json());
-    // 辅助图层一共 19 份、约 4.8 MB，最后到也没关系：实体先画，图层到了再叠上去
+    // 辅助图层最后到也没关系：实体先画，图层到了再叠上去
     const geoPromise = loadGeo().catch(() => null);
+    // 按年份才需要的图层（当年那份主张线、割让面、太平天国）也一起发出去（§4.337）
+    const yearLayersPromise = fetchYearLayers(startYear);
     const data = await dataPromise;
     markStage('data');
     const map = new MapView(document.getElementById('map'));
@@ -40,6 +50,19 @@ async function boot() {
     // 实体不等辅助图层：2,091 条点先画出来，读者这时已经能点、能搜
     map.setEntities(data.entities);
     markStage('entities');
+    // ?lon=&lat=&span=：把视图定到某处（比对/截图用）。要在决定「取不取细节层」之前定，
+    // 否则世界视野的深链也会把 1.1 MB 的东亚细节层拉下来（§4.337）
+    {
+        const q = new URLSearchParams(location.search);
+        const lon = Number(q.get('lon'));
+        const lat = Number(q.get('lat'));
+        const span = Number(q.get('span'));
+        if (Number.isFinite(lon) && Number.isFinite(lat) && span > 0)
+            map.setView(lon, lat, span);
+    }
+    /** 按窗口裁：视野里看不到东亚就不取 10m 细节层（世界视野深链省 1.1 MB） */
+    let geoData = null;
+    const detailPromise = map.wantsDetail() ? fetchDetailLayers() : null;
     // 疆域快照只在没有 1840 基线时才兜底，所以永远最后叠
     void territoriesPromise
         .then((terr) => map.setTerritories(terr))
@@ -499,6 +522,13 @@ async function boot() {
         renderLegend();
         renderPowerKey(year);
         renderLayers(year);
+        // 切年时补当年缺的图层（跨主张期、1842 起的割让面、1851–1865 的太平天国），到了重画
+        if (geoData) {
+            void ensureYearLayers(geoData, year).then((added) => {
+                if (added)
+                    map.redraw();
+            });
+        }
     };
     // ←/→ 换一年，Shift+←/→ 十年一格；焦点在输入框/下拉里时让给它们
     window.addEventListener('keydown', (ev) => {
@@ -707,16 +737,6 @@ async function boot() {
         overlay.set({ on: ovlOn.checked });
     });
     ovlOpacity.addEventListener('input', () => overlay.set({ opacity: Number(ovlOpacity.value) / 100 }));
-    // ?lon=&lat=&span=：把视图定到某处（比对/截图用）
-    {
-        const q = new URLSearchParams(location.search);
-        const lon = Number(q.get('lon'));
-        const lat = Number(q.get('lat'));
-        const span = Number(q.get('span'));
-        if (Number.isFinite(lon) && Number.isFinite(lat) && span > 0) {
-            map.setView(lon, lat, span);
-        }
-    }
     syncOverlayInfo();
     // 只读 sidecar（几百字节）决定开关能不能点；真图等点亮开关或 ?overlay=1 时再取（§4.335）
     void overlay.loadMeta().then(() => {
@@ -760,22 +780,36 @@ async function boot() {
         }
         legend.innerHTML = parts.join('');
     };
-    syncYear();
-    markStage('first-paint');
-    // 辅助图层到了：叠上去，tier/主张线/割让面这些依赖 geo 的东西这时才画得出来
+    year = startYear;
+    // 第一帧之前把「按年 / 按窗口」的图层补齐：第一帧就是完整的那一帧，
+    // 不会先画一版没有主张线、没有海岸线的图再跳一下（§4.337）
     const geo = await geoPromise;
     if (geo) {
+        geoData = geo;
+        const yearData = await yearLayersPromise;
+        applyYearLayers(geo, yearData);
+        if (detailPromise) {
+            const detail = await detailPromise;
+            if (detail)
+                applyDetail(geo, detail);
+        }
         map.setGeo(geo);
         markStage('geo');
     }
-    // ?year=1930：直接跳到某年（截图/比对用）
-    {
-        const y = Number(new URLSearchParams(location.search).get('year'));
-        if (Number.isFinite(y) && y > 0) {
-            year = Math.round(y);
-            syncYear();
-        }
-    }
+    // 之后缩放到东亚（或从世界视野转进来）再补细节层：只通知一次，到了重画
+    map.setDetailHandler(() => {
+        if (!geoData || detailPromise)
+            return;
+        void fetchDetailLayers().then((detail) => {
+            if (!detail || !geoData)
+                return;
+            if (!applyDetail(geoData, detail))
+                return;
+            map.redraw();
+        });
+    });
+    syncYear();
+    markStage('first-paint');
     markStage('done');
     console.log('[fengyu] loaded', data.manifest.total, 'entities', label({ 'zh-Hans': 'ok' }));
     // 殖民地的判定面最后补：它们不画、只服务悬停，首屏为它们等 1.6 MB 不值得（§4.336）。

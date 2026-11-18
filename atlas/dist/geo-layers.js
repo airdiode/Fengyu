@@ -55,6 +55,7 @@ const emptyGeo = () => ({
     land: [], landDetail: [], lakesDetail: [], riversDetail: [], polities: [], powers: {}, spheres: [], concessions: [], regions: [], railways: [],
     claims: [], cessions: [], cessionLines: [], sphereLines: [], leagues: [], sealanes: [], southSea: null, yellowriver: [], taiping: [],
     rivers: [], lakes: [], admin1: [], relief: [], wall: [], cities: [],
+    loaded: new Set(),
 });
 /**
  * 辅助图层的文件清单，**顺序就是 Promise.all 的取值顺序**，改一处要改两处。
@@ -67,17 +68,15 @@ const emptyGeo = () => ({
  * 1.6 MB 的不可见多边形（§4.336）。
  */
 export const COLONY_FILE = 'colonies.json';
+/**
+ * 首屏就取的图层。**按年 / 按窗口裁的那几份不在这里**：
+ * 主张线（claims-<年>.json）、割让面/界（1842 起）、太平天国（1851–1865）、
+ * 东亚细节层（只在看得见东亚时才要）——见 `DETAIL_FILES` / `YEAR_FILES`（§4.337）。
+ */
 export const GEO_FILES = [
     'land.json',
-    'land-detail.json',
-    'lakes-detail.json',
-    'rivers-detail.json',
     'polities.json',
     'spheres.json',
-    'claims.json',
-    'taiping.json',
-    'cessions.json',
-    'cession-lines.json',
     'sealanes.json',
     'southsea.json',
     'yellowriver.json',
@@ -88,41 +87,142 @@ export const GEO_FILES = [
     'wall.json',
     'cities.json',
 ];
+/**
+ * 东亚细节层（10m 海岸线、小河、小湖）：**只在视野里看得到东亚时才取**。
+ * 看世界的时候它们在 `clipOutsideDetail()` 里本来就整个被裁掉，取了也是白取（§4.337）。
+ */
+export const DETAIL_FILES = ['land-detail.json', 'rivers-detail.json', 'lakes-detail.json'];
+/**
+ * 主张线按「主张期」拆成几份，客户端按年份取当年的那一份（§4.337）。
+ * 这张表要和 `claims.json` 的 `periods` 对得上——`test/first-paint.test.mjs` 守着。
+ */
+export const CLAIM_PERIODS = [
+    { from: 1840, to: 1912 },
+    { from: 1912, to: 1945 },
+    { from: 1945, to: 1946 },
+    { from: 1946, to: 1950 },
+];
+/** 这一年该取哪一份主张线 */
+export function claimFileFor(year) {
+    const p = CLAIM_PERIODS.find((x) => year >= x.from && year < x.to) || CLAIM_PERIODS[CLAIM_PERIODS.length - 1];
+    return `claims-${p.from}.json`;
+}
+/** 按年份才需要的图层：文件 + 生效区间（`to` 缺省＝一直到头） */
+export const YEAR_FILES = [
+    { file: 'cessions.json', from: 1842 },
+    { file: 'cession-lines.json', from: 1858 },
+    { file: 'taiping.json', from: 1851, to: 1865 },
+];
+/** 某一年需要哪些按年图层（含主张线） */
+export function yearFiles(year) {
+    const files = [claimFileFor(year)];
+    for (const f of YEAR_FILES)
+        if (year >= f.from && (!('to' in f) || f.to === undefined || year <= f.to))
+            files.push(f.file);
+    return files;
+}
+async function getJson(base, name) {
+    try {
+        const res = await fetch(`${base}/${name}`);
+        if (!res.ok)
+            return null;
+        return await res.json();
+    }
+    catch {
+        return null;
+    }
+}
+/**
+ * 取某一年需要的按年图层。只取 `only` 里还没取过的（缺省＝这一年全部需要的）。
+ * 失败的文件静默跳过：少一条主张线比整页打不开好。
+ */
+export async function fetchYearLayers(year, base = 'public/geo', only) {
+    const files = (only && only.length ? only : yearFiles(year)).slice();
+    const docs = await Promise.all(files.map((f) => getJson(base, f)));
+    const out = { files: [], claims: [], cessions: [], cessionLines: [], taiping: [] };
+    files.forEach((f, i) => {
+        const doc = docs[i];
+        if (!doc)
+            return;
+        out.files.push(f);
+        if (f.startsWith('claims-')) {
+            const c = doc.claim;
+            if (c)
+                out.claims.push(c);
+        }
+        else if (f === 'cessions.json') {
+            out.cessions = doc.cessions || [];
+        }
+        else if (f === 'cession-lines.json') {
+            out.cessionLines = doc.lines || [];
+        }
+        else if (f === 'taiping.json') {
+            out.taiping = doc.periods || [];
+        }
+    });
+    return out;
+}
+/** 把取回来的按年图层挂到 geo 上；返回有没有真的新增数据 */
+export function applyYearLayers(geo, data) {
+    const loaded = (geo.loaded ||= new Set());
+    let changed = false;
+    for (const f of data.files) {
+        if (loaded.has(f))
+            continue;
+        loaded.add(f);
+        changed = true;
+    }
+    for (const c of data.claims)
+        if (!geo.claims.some((x) => x.id === c.id))
+            geo.claims.push(c);
+    if (data.cessions.length)
+        geo.cessions = data.cessions;
+    if (data.cessionLines.length)
+        geo.cessionLines = data.cessionLines;
+    if (data.taiping.length)
+        geo.taiping = data.taiping;
+    return changed;
+}
+/** 切年时调用：这一年缺的图层补上；返回 true 表示有新数据，调用方重画一次 */
+export async function ensureYearLayers(geo, year, base = 'public/geo') {
+    const loaded = (geo.loaded ||= new Set());
+    const need = yearFiles(year).filter((f) => !loaded.has(f));
+    if (!need.length)
+        return false;
+    const data = await fetchYearLayers(year, base, need);
+    return applyYearLayers(geo, data);
+}
+/** 取东亚细节层（世界视野不取） */
+export async function fetchDetailLayers(base = 'public/geo') {
+    // 按文件名取，别按 Promise.all 的下标对——DETAIL_FILES 的顺序改一次就是一条河画成湖
+    const [land, rivers, lakes] = await Promise.all(['land-detail.json', 'rivers-detail.json', 'lakes-detail.json'].map((f) => getJson(base, f)));
+    if (!Array.isArray(land) && !Array.isArray(rivers))
+        return null;
+    return {
+        landDetail: Array.isArray(land) ? land : [],
+        lakesDetail: Array.isArray(lakes) ? lakes : [],
+        riversDetail: Array.isArray(rivers) ? rivers : [],
+    };
+}
+export function applyDetail(geo, d) {
+    const loaded = (geo.loaded ||= new Set());
+    if (loaded.has(DETAIL_FILES[0]))
+        return false;
+    for (const f of DETAIL_FILES)
+        loaded.add(f);
+    geo.landDetail = d.landDetail;
+    geo.lakesDetail = d.lakesDetail;
+    geo.riversDetail = d.riversDetail;
+    return true;
+}
 export async function loadGeo(base = 'public/geo') {
     const geo = emptyGeo();
-    const get = async (name) => {
-        try {
-            const res = await fetch(`${base}/${name}`);
-            if (!res.ok)
-                return null;
-            return await res.json();
-        }
-        catch {
-            return null;
-        }
-    };
-    const [land, landDetail, lakesDetail, riversDetail, polities, spheres, claims, taiping, cessions, cessionLines, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities] = await Promise.all(GEO_FILES.map((name) => get(name)));
-    // spheres.json 里已经没有殖民地那 22 块（搬去 colonies.json），这里保持空数组
+    const [land, polities, spheres, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities] = await Promise.all(GEO_FILES.map((name) => getJson(base, name)));
     if (Array.isArray(land))
         geo.land = land;
-    if (Array.isArray(landDetail))
-        geo.landDetail = landDetail;
-    if (Array.isArray(lakesDetail))
-        geo.lakesDetail = lakesDetail;
-    if (Array.isArray(riversDetail))
-        geo.riversDetail = riversDetail;
     const polityDoc = polities;
     if (polityDoc?.polities)
         geo.polities = polityDoc.polities;
-    const taipingDoc = taiping;
-    if (taipingDoc?.periods)
-        geo.taiping = taipingDoc.periods;
-    const cessionDoc = cessions;
-    if (cessionDoc?.cessions)
-        geo.cessions = cessionDoc.cessions;
-    const cessionLineDoc = cessionLines;
-    if (cessionLineDoc?.lines)
-        geo.cessionLines = cessionLineDoc.lines;
     const laneDoc = sealanes;
     if (laneDoc?.lanes)
         geo.sealanes = laneDoc.lanes;
@@ -132,14 +232,9 @@ export async function loadGeo(base = 'public/geo') {
     const yellowRiverDoc = yellowDoc;
     if (yellowRiverDoc?.phases)
         geo.yellowriver = yellowRiverDoc.phases;
-    const claimDoc = claims;
-    if (claimDoc?.claims)
-        geo.claims = claimDoc.claims;
     const sphereDoc = spheres;
     if (sphereDoc) {
         geo.powers = sphereDoc.powers || {};
-        geo.spheres = [];
-        geo.spheres = sphereDoc.spheres || [];
         geo.concessions = sphereDoc.concessions || [];
         geo.regions = sphereDoc.regions || [];
         geo.railways = sphereDoc.railways || [];
