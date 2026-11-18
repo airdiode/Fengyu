@@ -616,7 +616,9 @@ body.reading #side { display: none; }
 .vp-copy.is-copied { color: #2b6b3f; border-color: currentColor; }
 
 /* 纠错与投稿：弹窗表单（#feedback）。沿用 .pop 的壳，只补表单自己的排版。 */
-#feedback .pop-inner { max-width: 560px; }
+/* 表单本体宽 560（内容列），弹窗壳要跟着收 —— 壳是 780，内层 560，右边就会空一大块（§4.341） */
+#feedback { width: min(616px, calc(100vw - 32px)); }
+#feedback .pop-inner { max-width: none; }
 .fb-row { display: block; margin: 10px 0; }
 .fb-row .fb-label { display: block; font-size: 12px; letter-spacing: .02em; color: #6b6152; margin-bottom: 4px; }
 .fb-row output { display: inline-block; font-size: 13px; color: #3b3226; background: #f3efe6; padding: 2px 8px; border-radius: 4px; }

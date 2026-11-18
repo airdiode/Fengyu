@@ -117,10 +117,10 @@ export class FeedbackForm {
         this.dlg.querySelectorAll('.pop-close').forEach((btn) => {
             btn.addEventListener('click', () => this.dlg.close());
         });
-        this.dlg.addEventListener('click', (ev) => {
-            if (ev.target === this.dlg)
-                this.dlg.close();
-        });
+        const cancel = this.dlg.querySelector('#fb-cancel');
+        cancel?.addEventListener('click', () => this.dlg.close());
+        // 点弹窗外面的遮罩**不再关闭**：读者常常先写了一屏说明，再回头点地图找个条目名，
+        // 一下就白写了。关的出口只有右上角的 × 与「取消」（Esc 仍然可以，键盘操作是明确的）。§4.341
     }
     async open(ctx) {
         this.ctx = ctx;
