@@ -250,3 +250,12 @@ img { max-width: 100%; height: auto; display: block; }
 /* 时间线里的外链：跟正文同色，只用下划线区分 */
 .timeline a { color: inherit; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; }
 .timeline a:hover { text-decoration-style: solid; }
+
+/* 名字的出处：一段居中引文，用来换气，不做成又一张卡片 */
+.name-band { text-align: center; border-top: 1px solid var(--line-soft); }
+.name-eyebrow { font-size: 12px; letter-spacing: .18em; color: var(--muted); margin: 0 0 18px; }
+.poem { margin: 0 0 12px; font-family: var(--serif); font-size: clamp(20px, 2.6vw, 28px); line-height: 1.9; }
+.poem p { margin: 0; }
+.poem em { font-style: normal; color: var(--ochre-deep); }
+.poem-src { color: var(--muted); font-size: 13px; margin: 0 0 26px; }
+.name-note { max-width: 640px; margin: 0 auto; color: var(--ink-soft); line-height: 1.95; }
