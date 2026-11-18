@@ -225,6 +225,16 @@ export class MapView {
         }
         return false;
     }
+    /**
+     * 殖民地的判定面后到（首屏不加载它，§4.336）：到了挂上去，悬停就能报归属。
+     * 图层关掉时 `geo.spheres` 也不参与判定，所以这里只负责替换数组。
+     */
+    setSpheres(list) {
+        if (!this.geo)
+            return;
+        this.geo.spheres = list;
+        this.draw();
+    }
     setEntities(list) {
         this.entities = list;
         this.draw();

@@ -61,6 +61,12 @@ const emptyGeo = () => ({
  * 导出是为了让测试对得上磁盘：拼错文件名时线上只会静默少画一层（get() 吞错），
  * 本地测不出来（`test/geo-files.test.mjs` 守着「清单 ↔ public/geo 目录」）。
  */
+/**
+ * 殖民地的判定面：单独一份、首屏不取（`loadGeo()` 之后由 `loadColonies()` 补上）。
+ * 这些面从 2026-11-10 起就不画了（只标国名，§4.79），留在首屏纯属让读者多等
+ * 1.6 MB 的不可见多边形（§4.336）。
+ */
+export const COLONY_FILE = 'colonies.json';
 export const GEO_FILES = [
     'land.json',
     'land-detail.json',
@@ -96,6 +102,7 @@ export async function loadGeo(base = 'public/geo') {
         }
     };
     const [land, landDetail, lakesDetail, riversDetail, polities, spheres, claims, taiping, cessions, cessionLines, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities] = await Promise.all(GEO_FILES.map((name) => get(name)));
+    // spheres.json 里已经没有殖民地那 22 块（搬去 colonies.json），这里保持空数组
     if (Array.isArray(land))
         geo.land = land;
     if (Array.isArray(landDetail))
@@ -131,6 +138,7 @@ export async function loadGeo(base = 'public/geo') {
     const sphereDoc = spheres;
     if (sphereDoc) {
         geo.powers = sphereDoc.powers || {};
+        geo.spheres = [];
         geo.spheres = sphereDoc.spheres || [];
         geo.concessions = sphereDoc.concessions || [];
         geo.regions = sphereDoc.regions || [];
@@ -152,6 +160,22 @@ export async function loadGeo(base = 'public/geo') {
     if (wallDoc?.lines)
         geo.wall = wallDoc.lines;
     return geo;
+}
+/**
+ * 补取殖民地的判定面（悬停用，不画）。失败就返回空数组——悬停少报一种归属，
+ * 不该影响别的。调用方在首屏画完之后再调（main.ts 的 `done` 之后）。
+ */
+export async function loadColonies(base = 'public/geo') {
+    try {
+        const res = await fetch(`${base}/${COLONY_FILE}`);
+        if (!res.ok)
+            return [];
+        const doc = (await res.json());
+        return Array.isArray(doc.colonies) ? doc.colonies : [];
+    }
+    catch {
+        return [];
+    }
 }
 /** 某一年该用哪个国名；没有对应年份就返回 null */
 export function polityName(p, year) {

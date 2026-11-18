@@ -6,7 +6,7 @@ import { Reader } from './reader.js';
 import { label, spanOf } from './types.js';
 import { CATEGORY_ORDER, EVENT_CATEGORY, swatchSvg } from './event-category.js';
 import { parseFilter, searchEntities } from './search.js';
-import { GEO_LAYERS, layersAt, loadGeo } from './geo-layers.js';
+import { GEO_LAYERS, layersAt, loadColonies, loadGeo } from './geo-layers.js';
 import { MapOverlay } from './overlay.js';
 import { YEAR_FROM, YEAR_TO, yearStep } from './year-nav.js';
 import { groupThemes } from './theme-groups.js';
@@ -778,6 +778,14 @@ async function boot() {
     }
     markStage('done');
     console.log('[fengyu] loaded', data.manifest.total, 'entities', label({ 'zh-Hans': 'ok' }));
+    // 殖民地的判定面最后补：它们不画、只服务悬停，首屏为它们等 1.6 MB 不值得（§4.336）。
+    // 在此之前悬停不会报「英属印度」这类归属，其余（租借地、割地、占领区）照常。
+    void loadColonies().then((list) => {
+        if (!list.length)
+            return;
+        map.setSpheres(list);
+        markStage('hover');
+    });
 }
 boot().catch((err) => {
     console.error(err);
