@@ -218,7 +218,7 @@
         <ul>
           <li><b>纠错：</b>点开任意一条的「这一条有误？」，或页脚的「报错与投稿」。配好后可直接在页面提交，反馈会公开出现在项目的 GitHub issue 列表里，处理后会在提交记录里写明。</li>
           <li><b>资料与建议：</b>写到 <a href="mailto:contact@airdiode.com">contact@airdiode.com</a>；长篇材料、扫描件、书目都走这个邮箱。</li>
-          <li><b>请别在反馈里写个人信息。</b>公开的 issue 谁都能看见；联系方式一格可以不填。</li>
+          <li><b>请别在反馈里写个人信息。</b>公开的 issue 谁都能看见；表单也不收联系方式——要私下说明，用上面的邮箱。</li>
         </ul>
 
         <h3>缘起与开放</h3>
@@ -245,7 +245,7 @@
       <div class="pop-inner">
         <button class="pop-close" data-close="feedback" type="button" aria-label="关闭">×</button>
         <h2 id="feedback-title">报错与投稿</h2>
-        <p class="about-sub">带 * 的必填；条目、年份与数据版本会自动附上。</p>
+        <p class="about-sub">带 * 的必填；条目、年份与数据版本会自动附上。<b>反馈会公开出现在 GitHub 上</b>——正文里不要写电话、住址、单位等私人信息；要私下说明，用页脚的 <a href="mailto:contact@airdiode.com">邮箱</a>。</p>
         <div class="fb-row"><span class="fb-label">相关条目</span><output id="fb-entity">（未指定）</output></div>
         <label class="fb-row"><span class="fb-label">类型 *</span>
           <select id="fb-kind">
@@ -263,11 +263,8 @@
         <label class="fb-row"><span class="fb-label">依据（书名 + 页码 / 档案 / 链接）</span>
           <input id="fb-basis" type="text" placeholder="例：《清史稿》卷四十二，第 1234 页" />
         </label>
-        <label class="fb-row"><span class="fb-label">联系方式（可选）</span>
-          <input id="fb-contact" type="text" autocomplete="off" placeholder="愿意留就留，便于回问依据" />
-        </label>
         <input id="fb-hp" class="fb-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-        <label class="fb-agree"><input id="fb-agree" type="checkbox" /> 我知道这条反馈会公开出现在 GitHub 上（联系方式可不填）</label>
+        <label class="fb-agree"><input id="fb-agree" type="checkbox" /> 我知道这条反馈会公开出现在 GitHub 上，不会在正文里写电话、住址等私人信息</label>
         <div class="fb-actions">
           <button id="fb-submit" type="button" class="fb-primary">提交</button>
           <button id="fb-mail" type="button">用邮件发送</button>

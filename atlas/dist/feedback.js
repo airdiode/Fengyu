@@ -25,9 +25,6 @@ export const issueBody = (d) => {
         '### 依据（书页 / 档案 / 链接）',
         d.basis.trim() || '（未提供）',
         '',
-        '### 联系方式（可选）',
-        d.contact.trim() || '（不需要回复）',
-        '',
         '---',
         '由站内表单提交。',
     ].join('\n');
@@ -65,7 +62,6 @@ export const payloadOf = (d) => ({
     version: d.version,
     detail: d.detail.trim(),
     basis: d.basis.trim(),
-    contact: d.contact.trim(),
 });
 const readMeta = () => {
     const get = (name, fallback = '') => document.querySelector('meta[name="' + name + '"]')?.getAttribute('content') || fallback;
@@ -84,7 +80,6 @@ export class FeedbackForm {
     entityOut;
     detail;
     basis;
-    contact;
     agree;
     honeypot;
     status;
@@ -102,7 +97,6 @@ export class FeedbackForm {
         this.entityOut = $('fb-entity');
         this.detail = $('fb-detail');
         this.basis = $('fb-basis');
-        this.contact = $('fb-contact');
         this.agree = $('fb-agree');
         this.honeypot = $('fb-hp');
         this.status = $('fb-status');
@@ -158,7 +152,6 @@ export class FeedbackForm {
             version: this.version,
             detail: this.detail.value,
             basis: this.basis.value,
-            contact: this.contact.value,
         };
     }
     pageUrl() {
