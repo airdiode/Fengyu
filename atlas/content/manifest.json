@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-18T08:24:22.579Z",
+  "builtAt": "2026-11-18T13:55:28.857Z",
   "counts": {
     "event": 574,
     "person": 1061,
@@ -872,7 +872,7 @@
     {
       "key": "route/1870s",
       "entities": 2,
-      "bytes": 2277,
+      "bytes": 2423,
       "timeSpan": [
         1875,
         1876
@@ -881,7 +881,7 @@
     {
       "key": "route/1880s",
       "entities": 2,
-      "bytes": 2320,
+      "bytes": 2608,
       "timeSpan": [
         1881,
         1881
@@ -890,7 +890,7 @@
     {
       "key": "route/1890s",
       "entities": 2,
-      "bytes": 3748,
+      "bytes": 3892,
       "timeSpan": [
         1896,
         1898
@@ -899,7 +899,7 @@
     {
       "key": "route/1900s",
       "entities": 21,
-      "bytes": 23093,
+      "bytes": 24119,
       "timeSpan": [
         1900,
         1909
@@ -908,7 +908,7 @@
     {
       "key": "route/1910s",
       "entities": 5,
-      "bytes": 4900,
+      "bytes": 5191,
       "timeSpan": [
         1910,
         1915
@@ -926,7 +926,7 @@
     {
       "key": "route/1930s",
       "entities": 6,
-      "bytes": 6050,
+      "bytes": 6343,
       "timeSpan": [
         1934,
         1939
