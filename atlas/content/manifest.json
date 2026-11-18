@@ -1,9 +1,9 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-18T13:55:28.857Z",
+  "builtAt": "2026-11-18T15:11:59.294Z",
   "counts": {
-    "event": 574,
-    "person": 1061,
+    "event": 585,
+    "person": 1067,
     "organization": 47,
     "place": 64,
     "route": 50,
@@ -14,11 +14,11 @@
     "theme": 34,
     "technology": 13,
     "instrument": 6,
-    "institution": 131,
+    "institution": 132,
     "work": 27,
     "practice": 5
   },
-  "total": 2092,
+  "total": 2110,
   "shards": [
     {
       "key": "asset/0s",
@@ -67,8 +67,8 @@
     },
     {
       "key": "event/1870s",
-      "entities": 30,
-      "bytes": 22086,
+      "entities": 32,
+      "bytes": 24864,
       "timeSpan": [
         1870,
         1878
@@ -76,8 +76,8 @@
     },
     {
       "key": "event/1880s",
-      "entities": 30,
-      "bytes": 18797,
+      "entities": 31,
+      "bytes": 20158,
       "timeSpan": [
         1880,
         1889
@@ -121,8 +121,8 @@
     },
     {
       "key": "event/1930s",
-      "entities": 70,
-      "bytes": 51976,
+      "entities": 75,
+      "bytes": 59023,
       "timeSpan": [
         1930,
         1939
@@ -130,8 +130,8 @@
     },
     {
       "key": "event/1940s",
-      "entities": 65,
-      "bytes": 49986,
+      "entities": 68,
+      "bytes": 54095,
       "timeSpan": [
         1940,
         1949
@@ -382,8 +382,8 @@
     },
     {
       "key": "institution/1930s",
-      "entities": 10,
-      "bytes": 8755,
+      "entities": 11,
+      "bytes": 10684,
       "timeSpan": [
         1930,
         1938
@@ -637,8 +637,8 @@
     },
     {
       "key": "person/1830s",
-      "entities": 53,
-      "bytes": 46492,
+      "entities": 54,
+      "bytes": 47528,
       "timeSpan": [
         1830,
         1839
@@ -646,8 +646,8 @@
     },
     {
       "key": "person/1840s",
-      "entities": 73,
-      "bytes": 52865,
+      "entities": 75,
+      "bytes": 55005,
       "timeSpan": [
         1840,
         1849
@@ -673,8 +673,8 @@
     },
     {
       "key": "person/1870s",
-      "entities": 99,
-      "bytes": 108141,
+      "entities": 100,
+      "bytes": 109216,
       "timeSpan": [
         1870,
         1879
@@ -682,8 +682,8 @@
     },
     {
       "key": "person/1880s",
-      "entities": 132,
-      "bytes": 142457,
+      "entities": 134,
+      "bytes": 144562,
       "timeSpan": [
         1880,
         1889

@@ -45,6 +45,9 @@ export function numberBadge(e) {
         const unit = metric.unit ? ` ${metric.unit}` : '';
         return { text: `${label(metric.name)} ${last.value}${unit}`, kind: 'metric' };
     }
+    const port = e.port;
+    if (port && Number.isFinite(port.open))
+        return { text: `${port.open} 年开埠`, kind: 'port' };
     const adopt = (e.adoption || [])[0];
     if (adopt)
         return { text: `${adopt.year} 年采用`, kind: 'adoption' };
