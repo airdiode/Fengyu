@@ -568,9 +568,18 @@ async function boot() {
         year = v;
         syncYear();
     });
+    // 顶栏高度写进 CSS 变量：窄屏上顶栏是两行（标题 + 搜索 + 按钮），
+    // 专题浮层与图层菜单要从它下面开始，不能写死 px（§4.338）
+    const topbarEl = document.getElementById('topbar');
+    const syncTopbarHeight = () => {
+        if (topbarEl)
+            document.documentElement.style.setProperty('--topbar-h', `${topbarEl.offsetHeight}px`);
+    };
+    syncTopbarHeight();
     window.addEventListener('resize', () => {
         map.resize();
         timeline.resize();
+        syncTopbarHeight();
     });
     // 图层开关：只列当年有意义的图层（太平天国、行军箭头只在 1850–60 年代）
     const layerBox = document.getElementById('layer-list');

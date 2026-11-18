@@ -112,6 +112,12 @@ export class MapView {
     /** 点中县点：打开该县 1840–1911 的全部报灾记录 */
     onClimatePick = () => { };
     dragging = false;
+    /** 按下的指针（触摸可能两根）：pointerId → 屏幕坐标 */
+    pointers = new Map();
+    /** 双指缩放的状态：上一次的两指距离与中点 */
+    pinch = null;
+    /** 本次按下累计移动的像素：超过阈值就当作「拖过」，松手不选中 */
+    moved = 0;
     /** 细节层缺失时的一次性回调（视野转进东亚） */
     onDetailNeeded = null;
     last = [0, 0];
@@ -904,15 +910,54 @@ export class MapView {
             this.draw();
         }, { passive: false });
         this.canvas.addEventListener('pointerdown', (ev) => {
+            this.pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+            this.canvas.setPointerCapture(ev.pointerId);
+            // 第二根手指落下：从「拖动」切成「双指缩放」，这一下松手不该选中任何东西
+            if (this.pointers.size === 2) {
+                const [a, b] = [...this.pointers.values()];
+                this.pinch = {
+                    dist: Math.hypot(a.x - b.x, a.y - b.y),
+                    mx: (a.x + b.x) / 2,
+                    my: (a.y + b.y) / 2,
+                };
+                this.dragging = false;
+                this.moved = 99;
+                this.canvas.classList.remove('dragging');
+                return;
+            }
             // 拖动会改变视图，双击循环从头开始
             this.dragging = true;
+            this.moved = 0;
             this.last = [ev.clientX, ev.clientY];
             this.canvas.classList.add('dragging');
-            this.canvas.setPointerCapture(ev.pointerId);
         });
         this.canvas.addEventListener('pointermove', (ev) => {
+            const tracked = this.pointers.get(ev.pointerId);
+            if (tracked) {
+                tracked.x = ev.clientX;
+                tracked.y = ev.clientY;
+            }
+            // 双指缩放：按两指距离的比例缩、按中点平移（触摸屏没有滚轮）
+            if (this.pinch && this.pointers.size >= 2) {
+                const [a, b] = [...this.pointers.values()];
+                const rect = this.canvas.getBoundingClientRect();
+                const dist = Math.hypot(a.x - b.x, a.y - b.y);
+                const mx = (a.x + b.x) / 2;
+                const my = (a.y + b.y) / 2;
+                if (this.pinch.dist > 0 && dist > 0 && rect.width && rect.height) {
+                    this.zoomAtPoint(mx - rect.left, my - rect.top, this.pinch.dist / dist);
+                    const dx = ((mx - this.pinch.mx) / rect.width) * this.cam.w;
+                    const dy = ((my - this.pinch.my) / rect.height) * this.cam.h;
+                    this.cam.x -= dx;
+                    this.cam.y -= dy;
+                    this.draw();
+                }
+                this.pinch = { dist, mx, my };
+                return;
+            }
             if (!this.dragging)
                 return;
+            this.moved += Math.hypot(ev.clientX - this.last[0], ev.clientY - this.last[1]);
             if (Math.hypot(ev.clientX - this.last[0], ev.clientY - this.last[1]) > 3)
                 this.dblStep = 0;
             const rect = this.canvas.getBoundingClientRect();
@@ -923,9 +968,23 @@ export class MapView {
             this.last = [ev.clientX, ev.clientY];
             this.draw();
         });
-        this.canvas.addEventListener('pointerup', (ev) => {
+        this.canvas.addEventListener('pointercancel', (ev) => {
+            this.pointers.delete(ev.pointerId);
+            if (this.pointers.size < 2)
+                this.pinch = null;
             this.dragging = false;
             this.canvas.classList.remove('dragging');
+        });
+        this.canvas.addEventListener('pointerup', (ev) => {
+            this.pointers.delete(ev.pointerId);
+            if (this.pointers.size < 2)
+                this.pinch = null;
+            const dragged = this.moved > 6;
+            this.dragging = false;
+            this.canvas.classList.remove('dragging');
+            // 拖着看地图的时候松手，不该顺手打开「刚好路过的那一点」（触摸屏上尤其明显）
+            if (dragged)
+                return;
             const rect = this.canvas.getBoundingClientRect();
             const sx = ev.clientX - rect.left;
             const sy = ev.clientY - rect.top;
