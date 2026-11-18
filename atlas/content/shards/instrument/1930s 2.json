@@ -1,1 +1,0 @@
-{"key":"instrument/1930s","entities":[{"id":"instrument.fabi","type":"instrument","labels":{"zh-Hans":"法币"},"time":{"kind":"interval","start":"1935","end":"1948","precision":"year"},"kind":"currency","denomination":{"zh-Hans":"纸币 · 元/角/分，禁止银元流通"},"summary":{"zh-Hans":"1935 年法币改革后的国家纸币，初期稳定，抗战与内战中急剧贬值。"},"sources":[{"ref":"source.《中国货币史》"}],"tags":["货币","纸币"]}]}

@@ -2,6 +2,7 @@ import { label, spanOf } from './types.js';
 import { categoryStyle, swatchSvg } from './event-category.js';
 import { sourceTitle } from './sources.js';
 import { esc } from './panel.js';
+import { numberBadge } from './numeric.js';
 const NUM = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
 /** 条目的一句提要：编者注记 > 摘要首句；人物摘要常以「某地人，」开头，跳过它 */
 function ledeOf(e, noteText) {
@@ -46,6 +47,13 @@ export function renderReader(t, byId) {
             ? `${Math.floor(span[0])} 年`
             : `${Math.floor(span[0])}–${Math.floor(span[1])} 年`
         : '';
+    // 带数的条目：页头统计「带数 N 条」，条目行右边挂一个小标（§4.340）
+    const badges = new Map();
+    for (const id of t.members || []) {
+        const b = numberBadge(byId.get(id));
+        if (b)
+            badges.set(id, b.text);
+    }
     const refs = (t.sources || [])
         .map((s) => byId.get(s.ref))
         .filter((e) => !!e && e.type === 'source')
@@ -69,7 +77,7 @@ export function renderReader(t, byId) {
             const y = yearOf(e);
             const noteText = note[id] ? label(note[id]) : '';
             const lede = ledeOf(e, noteText);
-            return `<li class="rd-item" data-id="${esc(id)}"><span class="rd-year">${esc(y)}</span>${iconOf(e)}<span class="rd-main"><b class="rd-name">${esc(label(e.labels))}</b>${lede ? `<span class="rd-lede">${esc(lede)}</span>` : ''}</span></li>`;
+            return `<li class="rd-item" data-id="${esc(id)}"><span class="rd-year">${esc(y)}</span>${iconOf(e)}<span class="rd-main"><b class="rd-name">${esc(label(e.labels))}</b>${lede ? `<span class="rd-lede">${esc(lede)}</span>` : ''}</span>${badges.has(id) ? `<span class="rd-badge">${esc(badges.get(id))}</span>` : ''}</li>`;
         })
             .join('');
         return `<section class="rd-ch" id="rd-ch-${i + 1}">
@@ -81,7 +89,7 @@ export function renderReader(t, byId) {
         .join('');
     return `<div class="rd">
   <header class="rd-head">
-    <div class="rd-kicker">专题 · ${sections.length} 章 · ${total} 条</div>
+    <div class="rd-kicker">专题 · ${sections.length} 章 · ${total} 条${badges.size ? ` · 带数 ${badges.size} 条` : ''}</div>
     <h1 class="rd-h1">${esc(label(t.labels))}</h1>
     ${t.question ? `<p class="rd-q">${esc(label(t.question))}</p>` : ''}
     ${t.summary ? `<p class="rd-lede-2">${esc(label(t.summary))}</p>` : ''}

@@ -228,6 +228,9 @@ export class Panel {
         this.head.textContent = `${TYPE_ZH[e.type] || e.type} · ${label(e.labels)}`;
         const cat = e.type === 'event' ? categoryStyle(e.category) : null;
         const extra = [];
+        // 「硬数字」几块（灾祸 / 条约 / 战役 / 口岸）单独一类：它们要紧跟摘要，
+        // 不能埋到「可以去看看」下面——读者点开一条条约，先要看赔了多少、开了哪几口（§4.340）。
+        const facts = [];
         const h = e.hazard;
         if (h) {
             const HAZARD = {
@@ -242,9 +245,9 @@ export class Panel {
                     .slice(0, 3)
                     .map(([k, n]) => `${k} ${n}`)
                     .join(' · ');
-                extra.push(`<div class="meta">该年全国报灾 ${c.n} 条${parts ? `（${parts}）` : ''} · 见时间轴下方灾荒条</div>`);
+                facts.push(`<div class="meta">该年全国报灾 ${c.n} 条${parts ? `（${parts}）` : ''} · 见时间轴下方灾荒条</div>`);
             }
-            extra.push(`<div class="hazard">
+            facts.push(`<div class="hazard">
         <b>${HAZARD[h.kind] || h.kind}</b>
         ${h.intensity ? `· ${h.intensity.value}${h.intensity.unit || ''}` : ''}
         · 死亡 ${fmtDeaths(h)}
@@ -269,15 +272,15 @@ export class Panel {
             if (t.privileges?.length) {
                 rows.push(`<div class="treaty-row"><b>条款</b>${t.privileges.map((p) => `<span class="chip">${p}</span>`).join('')}</div>`);
             }
-            extra.push(`<div class="treaty">${rows.join('')}</div>`);
+            facts.push(`<div class="treaty">${rows.join('')}</div>`);
         }
         // 战役：交战方、兵力、伤亡、结果（战争部分，2026-11-17 起）
         if (e.battle)
-            extra.push(battleHtml(e.battle));
+            facts.push(battleHtml(e.battle));
         // 通商口岸：约开还是自开，依据哪一条约
         if (e.port) {
             const kind = e.port.kind === 'self' ? '自开商埠' : '约开商埠';
-            extra.push(`<div class="meta">${e.port.open} 年 · ${kind}${e.port.treaty ? ` · ${e.port.treaty}` : ''}</div>`);
+            facts.push(`<div class="meta">${e.port.open} 年 · ${kind}${e.port.treaty ? ` · ${e.port.treaty}` : ''}</div>`);
         }
         if (e.type === 'institution' && e.sector)
             extra.push(`<div class="meta">行业 · ${SECTOR[e.sector] || e.sector}</div>`);
@@ -367,6 +370,7 @@ export class Panel {
         <h2>${label(e.labels)}</h2>
         <div class="meta">${cat ? `${swatchSvg(cat, 10)} ` : ''}${span}${cat ? ' · ' + cat.name : ''}${e.type === 'event' && e.category && !cat ? ' · ' + e.category : ''}</div>
         ${e.summary ? `<p>${label(e.summary)}</p>` : ''}
+        ${facts.join('')}
         ${this.personPointsBlock(e)}
         ${this.visitsBlock(e)}
         ${extra.join('')}

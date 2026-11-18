@@ -564,7 +564,8 @@ figure.asset .prov { display: block; font-size: 10px; opacity: .8; }
 .rd-intro { margin: 0 0 14px; font-size: 14px; line-height: 1.95; color: #5b5347; }
 .rd-list { list-style: none; margin: 0; padding: 0; }
 .rd-item {
-  display: grid; grid-template-columns: 64px 14px 1fr; gap: 10px; align-items: baseline;
+  /* 第四列是「这一条带的数」的小标，没有就空着（§4.340） */
+  display: grid; grid-template-columns: 64px 14px 1fr auto; gap: 10px; align-items: baseline;
   padding: 8px 6px; border-top: 1px dashed #e6dcc8; cursor: pointer;
 }
 .rd-item:hover { background: #f6efe1; }
@@ -575,6 +576,17 @@ figure.asset .prov { display: block; font-size: 10px; opacity: .8; }
 .rd-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .rd-name { font-size: 14px; font-weight: 600; }
 .rd-lede { font-size: 12.5px; color: #6f6557; line-height: 1.6; }
+/* 条目行右边的小标：赔款 / 伤亡 / 死亡 / 指标 / 采用年份，只写一个数 */
+.rd-badge {
+  justify-self: end; align-self: center; white-space: nowrap;
+  font-size: 11px; color: #8a3a2a; background: rgba(168, 56, 42, .07);
+  border: 1px solid rgba(168, 56, 42, .18); border-radius: 10px; padding: 1px 8px;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 900px) {
+  .rd-item { grid-template-columns: 52px 12px 1fr; }
+  .rd-badge { grid-column: 3; justify-self: start; margin-top: 4px; }
+}
 .rd-foot { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 body.reading #side { display: none; }
 

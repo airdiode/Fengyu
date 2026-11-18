@@ -1,1 +1,0 @@
-{"key":"instrument/1840s","entities":[{"id":"instrument.zhiqian","type":"instrument","labels":{"zh-Hans":"制钱"},"time":{"kind":"interval","start":"1840","end":"1911","precision":"year"},"kind":"currency","denomination":{"zh-Hans":"铜钱 · 文/吊，与银两并行"},"summary":{"zh-Hans":"清代本朝铜钱，与银两构成「银钱平行本位」；晚清铜元兴起后逐渐退出日常小额交易。"},"sources":[{"ref":"source.《中国货币史》"}],"tags":["货币"]}]}
