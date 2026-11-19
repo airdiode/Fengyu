@@ -1,8 +1,8 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-19T07:40:49.601Z",
+  "builtAt": "2026-11-19T13:21:42.284Z",
   "counts": {
-    "event": 627,
+    "event": 628,
     "person": 1080,
     "organization": 47,
     "place": 65,
@@ -18,7 +18,7 @@
     "work": 33,
     "practice": 5
   },
-  "total": 2179,
+  "total": 2180,
   "shards": [
     {
       "key": "asset/0s",
@@ -121,8 +121,8 @@
     },
     {
       "key": "event/1930s",
-      "entities": 75,
-      "bytes": 59023,
+      "entities": 76,
+      "bytes": 60958,
       "timeSpan": [
         1930,
         1939
