@@ -268,7 +268,7 @@ async function boot() {
     });
     /** 打开一个实体：必要时跳到它的年份、镜头对准、再选中。
      *  `fromTheme` 给了就从专题列表点进来的——详情顶部放一个「返回专题」。 */
-    const openEntity = (e, fromTheme) => {
+    const openEntity = (e, fromTheme, backOverride) => {
         const sp = spanOf(e);
         if (sp && (year < sp[0] - 0.5 || year > sp[1] + 0.5)) {
             const target = yearFor(e);
@@ -278,12 +278,13 @@ async function boot() {
             }
         }
         map.focusEntity(e);
-        const back = fromTheme
-            ? {
-                label: `返回专题 · ${label(fromTheme.labels)}`,
-                onClick: () => openTheme(fromTheme),
-            }
-            : undefined;
+        const back = backOverride ??
+            (fromTheme
+                ? {
+                    label: `返回专题 · ${label(fromTheme.labels)}`,
+                    onClick: () => openTheme(fromTheme),
+                }
+                : undefined);
         pick(e.id, back);
     };
     // 详情里的关系 chip → 打开相邻实体，读者可以顺着关系一路挖
@@ -292,8 +293,14 @@ async function boot() {
         if (e)
             openEntity(e);
     });
-    /** 从检索结果里打开 */
-    const pickHit = (hit) => openEntity(hit.entity);
+    /**
+     * 从检索结果里打开：面板留一个「← 返回检索结果」。
+     * 检索词、类型过滤、结果顺序都在 `renderHits()` 里，回来时原样重画，不用重新输入。
+     */
+    const pickHit = (hit) => openEntity(hit.entity, undefined, {
+        label: `返回检索结果「${searchInput.value.trim()}」· ${hits.length} 条`,
+        onClick: () => renderHits(),
+    });
     // ---- 检索 ----
     const searchInput = document.getElementById('search-input');
     const searchFilter = document.getElementById('search-filter');

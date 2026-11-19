@@ -297,6 +297,16 @@ button.chip.result-chip { font: inherit; font-size: 11px; line-height: 1.7; curs
 button.chip.result-chip:hover { border-color: var(--seal); color: var(--seal); }
 button.chip.result-chip.active { background: var(--seal); border-color: var(--seal); color: #fff; }
 .result-total { margin: 8px 0 2px; font-size: 11px; color: #a49a88; }
+/* 窄屏：13 个类型 chip 会折成三行、吃掉半屏——改成单行横向滚动 */
+@media (max-width: 640px) {
+  .result-chips {
+    flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+    padding: 0 14px 2px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .result-chips::-webkit-scrollbar { display: none; }
+  .result-chips .result-chip { flex: 0 0 auto; }
+  .result-total { margin-top: 6px; }
+}
 /* 年份后面的年号/民国纪年：小一号、不抢戏 */
 .result-list .y .era { font-style: normal; margin-left: 2px; font-size: 9.5px; color: #a49a88; }
 /* 无结果时的「相近条目」 */
