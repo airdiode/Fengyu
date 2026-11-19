@@ -1,9 +1,9 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-19T05:23:07.446Z",
+  "builtAt": "2026-11-19T05:39:07.929Z",
   "counts": {
     "event": 617,
-    "person": 1075,
+    "person": 1077,
     "organization": 47,
     "place": 65,
     "route": 50,
@@ -14,11 +14,11 @@
     "theme": 34,
     "technology": 16,
     "instrument": 6,
-    "institution": 133,
+    "institution": 134,
     "work": 33,
     "practice": 5
   },
-  "total": 2161,
+  "total": 2164,
   "shards": [
     {
       "key": "asset/0s",
@@ -328,8 +328,8 @@
     },
     {
       "key": "institution/1870s",
-      "entities": 6,
-      "bytes": 8246,
+      "entities": 7,
+      "bytes": 9036,
       "timeSpan": [
         1870,
         1878
@@ -691,8 +691,8 @@
     },
     {
       "key": "person/1890s",
-      "entities": 144,
-      "bytes": 147146,
+      "entities": 145,
+      "bytes": 147831,
       "timeSpan": [
         1890,
         1899
@@ -709,8 +709,8 @@
     },
     {
       "key": "person/1910s",
-      "entities": 153,
-      "bytes": 74575,
+      "entities": 154,
+      "bytes": 75340,
       "timeSpan": [
         1910,
         1919

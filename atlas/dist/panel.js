@@ -174,6 +174,8 @@ export class Panel {
     bySource;
     /** 气象年表：灾荒条目里补一句「该年全国报灾多少」 */
     climate;
+    /** 作者 → 作品（第一次打开人物页时才建） */
+    worksIndex;
     /** 点关系 chip 时跳到另一个实体（由主程序接到 openEntity） */
     navigate = () => { };
     hoverBody;
@@ -377,6 +379,7 @@ export class Panel {
         ${this.personPointsBlock(e)}
         ${this.visitsBlock(e)}
         ${extra.join('')}
+        ${this.worksBlock(e)}
         ${this.relatedPeopleBlock(e)}
         ${this.personNetworkBlock(e)}
         ${this.adoptionBlock(e)}
@@ -619,6 +622,23 @@ export class Panel {
      * 现代门牌与墓园位置混进去会互相打架。这里给地址（细到能导航）、一句现状说明，
      * 以及「原墓/迁建/重建」这类最容易踩坑的现状标注。
      */
+    /** 人物页的「作品」：按年份列，点一下进作品页 */
+    worksBlock(e) {
+        if (e.type !== 'person')
+            return '';
+        if (!this.worksIndex)
+            this.worksIndex = indexWorksByCreator([...this.byId.values()]);
+        const works = this.worksIndex.get(e.id) || [];
+        if (!works.length)
+            return '';
+        const chips = works
+            .map((w) => {
+            const y = spanOf(w)?.[0];
+            return `<button type="button" class="chip rel-link" data-id="${esc(w.id)}">${esc(label(w.labels))}${y ? `<span class="w-year">${Math.floor(y)}</span>` : ''}</button>`;
+        })
+            .join('');
+        return `<div class="works"><b class="block-title">作品</b><div class="work-chips">${chips}</div></div>`;
+    }
     visitsBlock(e) {
         const list = e.visits || [];
         if (!list.length)
@@ -977,6 +997,33 @@ export class Panel {
             li.addEventListener('click', () => onPick(li.dataset.id));
         });
     }
+}
+/**
+ * 作者 → 作品（§4.397）：人物页的「作品」一块用它。
+ *
+ * 数据里作品只写 `creators: [person.id]`，方向是「作品 → 作者」；这里反建索引，
+ * 让王韬、严复的页面能反过来列出自己写过什么——**不新增字段，也不要求两边都写 relations**，
+ * 否则 33 部作品要人工维护两遍，迟早对不上。
+ */
+export function indexWorksByCreator(entities) {
+    const out = new Map();
+    for (const e of entities) {
+        if (e.type !== 'work' || !e.creators?.length)
+            continue;
+        for (const c of e.creators) {
+            if (!out.has(c))
+                out.set(c, []);
+            out.get(c).push(e);
+        }
+    }
+    for (const list of out.values()) {
+        list.sort((a, b) => {
+            const ya = spanOf(a)?.[0] ?? 9999;
+            const yb = spanOf(b)?.[0] ?? 9999;
+            return ya - yb || label(a.labels).localeCompare(label(b.labels));
+        });
+    }
+    return out;
 }
 /** 类型的中文名（检索结果、列表里都用它） */
 export const typeLabel = (type) => TYPE_ZH[type] || type;
