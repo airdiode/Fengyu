@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-19T14:42:17.630Z",
+  "builtAt": "2026-11-19T14:53:52.765Z",
   "counts": {
     "event": 638,
     "person": 1080,
@@ -104,7 +104,7 @@
     {
       "key": "event/1910s",
       "entities": 88,
-      "bytes": 62792,
+      "bytes": 62789,
       "timeSpan": [
         1910,
         1919
@@ -131,7 +131,7 @@
     {
       "key": "event/1940s",
       "entities": 72,
-      "bytes": 62514,
+      "bytes": 62523,
       "timeSpan": [
         1940,
         1949
@@ -383,7 +383,7 @@
     {
       "key": "institution/1930s",
       "entities": 11,
-      "bytes": 11406,
+      "bytes": 11397,
       "timeSpan": [
         1930,
         1938
