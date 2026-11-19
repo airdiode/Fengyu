@@ -1,24 +1,24 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-18T15:11:59.294Z",
+  "builtAt": "2026-11-19T04:10:45.233Z",
   "counts": {
-    "event": 585,
-    "person": 1067,
+    "event": 611,
+    "person": 1071,
     "organization": 47,
-    "place": 64,
+    "place": 65,
     "route": 50,
     "front": 10,
     "territory": 26,
     "group": 43,
     "asset": 1,
     "theme": 34,
-    "technology": 13,
+    "technology": 16,
     "instrument": 6,
-    "institution": 132,
-    "work": 27,
+    "institution": 133,
+    "work": 33,
     "practice": 5
   },
-  "total": 2110,
+  "total": 2151,
   "shards": [
     {
       "key": "asset/0s",
@@ -40,8 +40,8 @@
     },
     {
       "key": "event/1840s",
-      "entities": 31,
-      "bytes": 19185,
+      "entities": 35,
+      "bytes": 25032,
       "timeSpan": [
         1840,
         1849
@@ -49,8 +49,8 @@
     },
     {
       "key": "event/1850s",
-      "entities": 28,
-      "bytes": 17790,
+      "entities": 32,
+      "bytes": 22653,
       "timeSpan": [
         1850,
         1859
@@ -58,8 +58,8 @@
     },
     {
       "key": "event/1860s",
-      "entities": 31,
-      "bytes": 20563,
+      "entities": 35,
+      "bytes": 25327,
       "timeSpan": [
         1860,
         1869
@@ -67,8 +67,8 @@
     },
     {
       "key": "event/1870s",
-      "entities": 32,
-      "bytes": 24864,
+      "entities": 34,
+      "bytes": 27573,
       "timeSpan": [
         1870,
         1878
@@ -76,8 +76,8 @@
     },
     {
       "key": "event/1880s",
-      "entities": 31,
-      "bytes": 20158,
+      "entities": 33,
+      "bytes": 22441,
       "timeSpan": [
         1880,
         1889
@@ -85,8 +85,8 @@
     },
     {
       "key": "event/1890s",
-      "entities": 51,
-      "bytes": 35334,
+      "entities": 53,
+      "bytes": 37794,
       "timeSpan": [
         1890,
         1899
@@ -103,8 +103,8 @@
     },
     {
       "key": "event/1910s",
-      "entities": 84,
-      "bytes": 56601,
+      "entities": 87,
+      "bytes": 60378,
       "timeSpan": [
         1910,
         1919
@@ -112,8 +112,8 @@
     },
     {
       "key": "event/1920s",
-      "entities": 66,
-      "bytes": 48712,
+      "entities": 69,
+      "bytes": 53130,
       "timeSpan": [
         1920,
         1929
@@ -130,8 +130,8 @@
     },
     {
       "key": "event/1940s",
-      "entities": 68,
-      "bytes": 54095,
+      "entities": 70,
+      "bytes": 58721,
       "timeSpan": [
         1940,
         1949
@@ -301,8 +301,8 @@
     },
     {
       "key": "institution/1840s",
-      "entities": 1,
-      "bytes": 624,
+      "entities": 2,
+      "bytes": 1699,
       "timeSpan": [
         1844,
         1844
@@ -601,8 +601,8 @@
     },
     {
       "key": "person/1790s",
-      "entities": 9,
-      "bytes": 5583,
+      "entities": 11,
+      "bytes": 7370,
       "timeSpan": [
         1790,
         1797
@@ -628,8 +628,8 @@
     },
     {
       "key": "person/1820s",
-      "entities": 32,
-      "bytes": 30132,
+      "entities": 33,
+      "bytes": 31026,
       "timeSpan": [
         1820,
         1828
@@ -646,8 +646,8 @@
     },
     {
       "key": "person/1840s",
-      "entities": 75,
-      "bytes": 55005,
+      "entities": 76,
+      "bytes": 55977,
       "timeSpan": [
         1840,
         1849
@@ -683,7 +683,7 @@
     {
       "key": "person/1880s",
       "entities": 134,
-      "bytes": 144562,
+      "bytes": 144625,
       "timeSpan": [
         1880,
         1889
@@ -745,8 +745,8 @@
     },
     {
       "key": "place/1840s",
-      "entities": 20,
-      "bytes": 10873,
+      "entities": 21,
+      "bytes": 11602,
       "timeSpan": [
         1840,
         1844
@@ -988,11 +988,11 @@
     },
     {
       "key": "technology/1900s",
-      "entities": 1,
-      "bytes": 2164,
+      "entities": 2,
+      "bytes": 3657,
       "timeSpan": [
         1908,
-        1908
+        1909
       ]
     },
     {
@@ -1011,6 +1011,24 @@
       "timeSpan": [
         1922,
         1923
+      ]
+    },
+    {
+      "key": "technology/1930s",
+      "entities": 1,
+      "bytes": 1259,
+      "timeSpan": [
+        1937,
+        1937
+      ]
+    },
+    {
+      "key": "technology/1940s",
+      "entities": 1,
+      "bytes": 1016,
+      "timeSpan": [
+        1944,
+        1944
       ]
     },
     {
@@ -1106,7 +1124,7 @@
     {
       "key": "theme/1840s",
       "entities": 14,
-      "bytes": 88588,
+      "bytes": 90871,
       "timeSpan": [
         1840,
         1847
@@ -1176,12 +1194,48 @@
       ]
     },
     {
+      "key": "work/1840s",
+      "entities": 2,
+      "bytes": 2135,
+      "timeSpan": [
+        1843,
+        1848
+      ]
+    },
+    {
       "key": "work/1850s",
       "entities": 2,
       "bytes": 1105,
       "timeSpan": [
         1853,
         1859
+      ]
+    },
+    {
+      "key": "work/1870s",
+      "entities": 1,
+      "bytes": 1024,
+      "timeSpan": [
+        1873,
+        1873
+      ]
+    },
+    {
+      "key": "work/1880s",
+      "entities": 1,
+      "bytes": 904,
+      "timeSpan": [
+        1882,
+        1882
+      ]
+    },
+    {
+      "key": "work/1890s",
+      "entities": 2,
+      "bytes": 2011,
+      "timeSpan": [
+        1893,
+        1893
       ]
     },
     {

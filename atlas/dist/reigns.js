@@ -1,11 +1,11 @@
 /** 清代年号与两宫太后垂帘听政的时段（时间轴上用）。 */
 /** 年号：起止按改元之年，与时间轴覆盖的 1840–1912 取交集 */
 export const REIGNS = [
-    { name: '道光', from: 1840, to: 1850, emperor: '清宣宗' },
-    { name: '咸丰', from: 1851, to: 1861, emperor: '清文宗' },
-    { name: '同治', from: 1862, to: 1874, emperor: '清穆宗' },
-    { name: '光绪', from: 1875, to: 1908, emperor: '清德宗' },
-    { name: '宣统', from: 1909, to: 1911, emperor: '溥仪' },
+    { name: '道光', from: 1840, to: 1850, emperor: '清宣宗', started: 1821 },
+    { name: '咸丰', from: 1851, to: 1861, emperor: '清文宗', started: 1851 },
+    { name: '同治', from: 1862, to: 1874, emperor: '清穆宗', started: 1862 },
+    { name: '光绪', from: 1875, to: 1908, emperor: '清德宗', started: 1875 },
+    { name: '宣统', from: 1909, to: 1911, emperor: '溥仪', started: 1909 },
 ];
 /**
  * 垂帘听政两段：
@@ -29,6 +29,22 @@ export function reignAt(year) {
         if (year >= r.from && year <= r.to)
             return r;
     return null;
+}
+/**
+ * 年的「当时叫法」：清代给年号（道光22、光绪1 写作光绪元年），民国给民国纪年。
+ * 检索结果与列表里跟在四位年份后面，读者不用自己换算。
+ */
+export function eraOf(year) {
+    if (year >= 1912 && year <= 1949) {
+        const n = year - 1911;
+        return `民国${n === 1 ? '元' : n}`;
+    }
+    const r = reignAt(year);
+    if (r) {
+        const n = year - r.started + 1;
+        return `${r.name}${n === 1 ? '元年' : n}`;
+    }
+    return '';
 }
 /** 某年是否在垂帘听政期间 */
 export function regencyAt(year) {

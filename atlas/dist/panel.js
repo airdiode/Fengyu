@@ -1,5 +1,7 @@
 import { label, spanOf } from './types.js';
 import { numberBadge } from './numeric.js';
+import { countByType } from './search.js';
+import { eraOf } from './reigns.js';
 import { categoryStyle, swatchSvg } from './event-category.js';
 import { resolveSources, sourceNote, sourceTitle } from './sources.js';
 const TYPE_ZH = {
@@ -767,41 +769,32 @@ export class Panel {
             .map((s) => this.refItem(s, pages.get(s.id), chapters.get(s.id)))
             .join('')}</div>`;
     }
-    /** 检索结果：显示命中字段与类型，标出查询词 */
-    showResults(hits, title, onPick, selected = 0, query = '') {
+    /** 检索结果：类型分组条 + 条目列表 + 统计（超过 80 条只显示前 80） */
+    showResults(hits, title, onPick, selected = 0, query = '', opts = {}) {
         this.showPanel();
         this.head.textContent = title;
+        const base = opts.base || hits;
         if (!hits.length) {
-            this.body.innerHTML = '<p class="empty">没有匹配的条目。换个词，或把筛选改成「全部」。</p>';
+            this.body.innerHTML = emptyResultHtml(query, !!(opts.activeType || base.length), opts.similar || []);
+            this.body.querySelectorAll('.empty-sim-item').forEach((btn) => {
+                btn.addEventListener('click', () => onPick(btn.dataset.id));
+            });
             return;
         }
-        const items = hits
-            .slice(0, 80)
-            .map((h, i) => {
-            const e = h.entity;
-            const sp = spanOf(e);
-            const y = sp ? Math.floor(sp[0]) : '';
-            const icon = e.type === 'event'
-                ? `<span class="ico">${swatchSvg(categoryStyle(e.category), 9)}</span>`
-                : '<span class="ico dot"></span>';
-            const typeName = h.field === 'alias'
-                ? '别名'
-                : h.field === 'summary'
-                    ? '摘要'
-                    : h.field === 'body'
-                        ? h.where || '正文'
-                        : TYPE_ZH[e.type] || e.type;
-            // 摘要/正文命中时给一行上下文，否则只看到标题不知道命中了什么
-            const snip = h.field === 'summary' || h.field === 'body'
-                ? `<span class="snip">${mark(h.text, query)}</span>`
-                : '';
-            return `<li data-id="${e.id}" class="${i === selected ? 'sel' : ''}">${icon}<span class="y">${y}</span>${label(e.labels)}${badgeHtml(e)}<span class="tag">${typeName}</span>${snip}</li>`;
-        })
-            .join('');
-        this.body.innerHTML = `<ul class="event-list result-list">${items}</ul>`;
-        this.body.querySelectorAll('li').forEach((li) => {
+        const chips = opts.onFilter ? resultChipsHtml(base, opts.activeType ?? null) : '';
+        const items = resultItemsHtml(hits, query, selected);
+        this.body.innerHTML = `${chips}<ul class="event-list result-list">${items}</ul><p class="result-total">${resultSummaryText(hits.length)}</p>`;
+        this.body.querySelectorAll('.result-list li').forEach((li) => {
             li.addEventListener('click', () => onPick(li.dataset.id));
         });
+        if (opts.onFilter) {
+            this.body.querySelectorAll('.result-chip').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const t = btn.dataset.type || '';
+                    opts.onFilter(t || null);
+                });
+            });
+        }
     }
     /** 专题：导读问题 + 章节 + 成员（按叙事顺序） */
     showTheme(t, byId, onPick) {
@@ -984,6 +977,66 @@ export class Panel {
             li.addEventListener('click', () => onPick(li.dataset.id));
         });
     }
+}
+/** 类型的中文名（检索结果、列表里都用它） */
+export const typeLabel = (type) => TYPE_ZH[type] || type;
+/** 结果顶部的类型分组条：全部 / 事件 80 / 人物 20……（点击切换，单类型时不出） */
+export function resultChipsHtml(base, active) {
+    const counts = countByType(base);
+    if (counts.length < 2)
+        return '';
+    const chip = (type, text) => `<button type="button" class="chip result-chip${type === active ? ' active' : ''}" data-type="${type ?? ''}">${esc(text)}</button>`;
+    return `<div class="result-chips">${chip(null, `全部 ${base.length}`)}${counts
+        .map((c) => chip(c.type, `${typeLabel(c.type)} ${c.count}`))
+        .join('')}</div>`;
+}
+/** 结果条目（最多 80 条；摘要/正文命中附一行上下文） */
+export function resultItemsHtml(hits, query, selected) {
+    return hits
+        .slice(0, 80)
+        .map((h, i) => {
+        const e = h.entity;
+        const sp = spanOf(e);
+        const y = sp ? Math.floor(sp[0]) : '';
+        const era = y ? eraOf(y) : '';
+        const icon = e.type === 'event'
+            ? `<span class="ico">${swatchSvg(categoryStyle(e.category), 9)}</span>`
+            : '<span class="ico dot"></span>';
+        const typeName = h.field === 'alias'
+            ? '别名'
+            : h.field === 'summary'
+                ? '摘要'
+                : h.field === 'body'
+                    ? h.where || '正文'
+                    : typeLabel(e.type);
+        const snip = h.field === 'summary' || h.field === 'body'
+            ? `<span class="snip">${mark(h.text, query)}</span>`
+            : '';
+        return `<li data-id="${e.id}" class="${i === selected ? 'sel' : ''}">${icon}<span class="y">${y}${era ? `<i class="era">${esc(era)}</i>` : ''}</span>${label(e.labels)}${badgeHtml(e)}<span class="tag">${typeName}</span>${snip}</li>`;
+    })
+        .join('');
+}
+/** 结果统计：超过 80 条时说明只显示了前 80 */
+export function resultSummaryText(total) {
+    if (total <= 0)
+        return '';
+    return total > 80 ? `共 ${total} 条，显示前 80 条` : `共 ${total} 条`;
+}
+/** 无结果时的引导：先给「相近条目」（如果有），再给三条可执行提示 */
+export function emptyResultHtml(query, filtered, similar = []) {
+    const tips = [];
+    if (filtered)
+        tips.push('把上方的筛选改回「全部」');
+    tips.push('换个更短的词（比如只留人名或地名）');
+    tips.push('试试条目的别名或旧称');
+    const sim = similar.length
+        ? `<p class="empty-sim-title">你要找的会不会是：</p><div class="empty-sim">${similar
+            .map((e) => `<button type="button" class="chip empty-sim-item" data-id="${esc(e.id)}">${esc(label(e.labels))}</button>`)
+            .join('')}</div>`
+        : '';
+    return `<p class="empty">没有匹配「${esc(query)}」的条目。</p>${sim}<ul class="empty-tips">${tips
+        .map((t) => `<li>${esc(t)}</li>`)
+        .join('')}</ul>`;
 }
 /**
  * 「这一条带的数」的小标标记（§4.344）：检索结果行与悬停卡共用。

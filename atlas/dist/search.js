@@ -1,3 +1,4 @@
+import { toHans } from './hans.js';
 import { label } from './types.js';
 const TEXT_CACHE = new WeakMap();
 /** 参与匹配的标签文字（各语言）；别名单独算，得分低一档 */
@@ -157,7 +158,8 @@ function snippet(text, q) {
     return `${start > 0 ? '…' : ''}${text.slice(start, end)}${end < text.length ? '…' : ''}`;
 }
 export function searchEntities(entities, query, filter = {}, limit = 40) {
-    const q = query.trim().toLowerCase();
+    // 繁体输入先归一成简体（§4.382）：「南京條約」也能搜到「南京条约」
+    const q = toHans(query.trim().toLowerCase());
     if (!q)
         return [];
     const types = filter.types && filter.types.length ? new Set(filter.types) : null;
@@ -213,6 +215,41 @@ export function searchEntities(entities, query, filter = {}, limit = 40) {
         return a.entity.id.localeCompare(b.entity.id);
     });
     return hits.slice(0, limit);
+}
+export function countByType(hits) {
+    const m = new Map();
+    for (const h of hits)
+        m.set(h.entity.type, (m.get(h.entity.type) || 0) + 1);
+    return [...m.entries()]
+        .map(([type, count]) => ({ type, count }))
+        .sort((a, b) => b.count - a.count || a.type.localeCompare(b.type));
+}
+/**
+ * 搜不到时的「相近条目」：不靠编辑距离，靠**二字组重合**。
+ * 中文没有词边界，把查询拆成相邻两字的片段，看条目的名称/别名/标签里能重合几个——
+ * 「南京条约」搜不到时，能给出《南京条约》相关的事件与人物；「道光皇帝」能给出道光帝。
+ * 只作兜底：条数少、门槛低（≥1 个片段），宁可给几条相关的，也别让读者对着一屏空白。
+ */
+export function suggestSimilar(entities, query, limit = 5) {
+    const q = compact(toHans(query));
+    if (q.length < 2)
+        return [];
+    const grams = [];
+    for (let i = 0; i < q.length - 1; i++)
+        grams.push(q.slice(i, i + 2));
+    const seen = new Set(grams);
+    const scored = [];
+    for (const e of entities) {
+        const hay = compact([label(e.labels), ...(e.aliases || []).map((a) => label(a)), ...(e.tags || [])].join(' '));
+        let n = 0;
+        for (const g of seen)
+            if (hay.includes(g))
+                n++;
+        if (n)
+            scored.push({ e, n });
+    }
+    scored.sort((a, b) => b.n - a.n || label(a.e.labels).length - label(b.e.labels).length);
+    return scored.slice(0, limit).map((x) => x.e);
 }
 /** 把「类型/事件类别」下拉的值翻译成过滤条件。 */
 export function parseFilter(value) {

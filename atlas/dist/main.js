@@ -5,7 +5,8 @@ import { Panel, esc } from './panel.js';
 import { Reader } from './reader.js';
 import { label, spanOf } from './types.js';
 import { CATEGORY_ORDER, EVENT_CATEGORY, swatchSvg } from './event-category.js';
-import { parseFilter, searchEntities } from './search.js';
+import { parseFilter, searchEntities, suggestSimilar } from './search.js';
+import { RECENT_KEY, parseRecent, pushRecent, serializeRecent } from './recent.js';
 import { applyDetail, applyYearLayers, ensureYearLayers, fetchDetailLayers, fetchYearLayers, GEO_LAYERS, layersAt, loadColonies, loadGeo, } from './geo-layers.js';
 import { MapOverlay } from './overlay.js';
 import { YEAR_FROM, YEAR_TO, yearStep } from './year-nav.js';
@@ -301,27 +302,125 @@ async function boot() {
     const catGroup = document.getElementById('search-cats');
     catGroup.innerHTML = CATEGORY_ORDER.map((c) => `<option value="cat:${c}">${EVENT_CATEGORY[c].name}</option>`).join('');
     let searching = false;
+    /** 全部命中（不再按类型二次过滤），用于顶部类型分组条的计数 */
+    let baseHits = [];
+    /** 当前展示的命中（可能按类型过滤过） */
     let hits = [];
     let cursor = 0;
-    const runSearch = () => {
-        const q = searchInput.value;
-        const filter = parseFilter(searchFilter.value);
-        hits = searchEntities(data.entities, q, filter);
+    /** 结果面板里点选类型后的过滤（null = 全部） */
+    let hitType = null;
+    const renderHits = () => {
+        const q = searchInput.value.trim();
+        hits = hitType ? baseHits.filter((h) => h.entity.type === hitType) : baseHits;
         cursor = 0;
-        searching = hits.length > 0 || q.trim().length > 0;
-        if (!searching) {
-            syncYear();
-            return;
-        }
-        panel.showResults(hits, `搜索「${q.trim()}」 · ${hits.length} 条`, (id) => {
+        // 地图高亮最多 120 个点：全量高亮会拖慢重绘，而 120 个已经足够看出「命中的分布」
+        map.setHighlight(baseHits.length ? baseHits.slice(0, 120).map((h) => h.entity.id) : null);
+        map.setSelected(null);
+        panel.showResults(hits, `搜索「${q}」 · ${hits.length} 条`, (id) => {
             const hit = hits.find((h) => h.entity.id === id);
             if (hit)
                 pickHit(hit);
-        }, 0, q.trim());
-        map.setHighlight(hits.length ? hits.map((h) => h.entity.id) : null);
-        map.setSelected(null);
+        }, 0, q, {
+            base: baseHits,
+            activeType: hitType,
+            onFilter: (t) => {
+                hitType = t;
+                renderHits();
+            },
+            // 一条都没有时给相近条目：按名称/别名/标签的二字组兜底
+            similar: baseHits.length ? [] : suggestSimilar(data.entities, q),
+        });
     };
-    searchInput.addEventListener('input', runSearch);
+    const runSearch = () => {
+        const q = searchInput.value;
+        const filter = parseFilter(searchFilter.value);
+        // 上限 500：再大的词也不可能一屏读完；500 足够让类型计数与「共 N 条」有意义
+        baseHits = searchEntities(data.entities, q, filter, 500);
+        hitType = null;
+        searching = baseHits.length > 0 || q.trim().length > 0;
+        if (!searching) {
+            map.setHighlight(null);
+            syncYear();
+            return;
+        }
+        renderHits();
+    };
+    // ---- 最近搜过的词（localStorage；无痕/禁用时读写失败也不影响搜索）----
+    const recentEl = document.getElementById('search-recent');
+    let recent = parseRecent((() => {
+        try {
+            return localStorage.getItem(RECENT_KEY);
+        }
+        catch {
+            return null;
+        }
+    })());
+    const saveRecent = (q) => {
+        const next = pushRecent(recent, q);
+        if (next.join('\u0000') === recent.join('\u0000'))
+            return;
+        recent = next;
+        try {
+            localStorage.setItem(RECENT_KEY, serializeRecent(recent));
+        }
+        catch {
+            /* 存不下就只在内存里留着 */
+        }
+    };
+    const hideRecent = () => {
+        recentEl.hidden = true;
+        recentEl.innerHTML = '';
+    };
+    const renderRecent = () => {
+        if (!recent.length || searchInput.value.trim()) {
+            hideRecent();
+            return;
+        }
+        const items = recent
+            .map((q, i) => `<button type="button" data-q="${esc(q)}"><span class="rn">${i + 1}</span>${esc(q)}</button>`)
+            .join('');
+        recentEl.innerHTML = `${items}<button type="button" class="clear-recent" data-clear="1">清除历史</button>`;
+        recentEl.hidden = false;
+    };
+    recentEl.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('button');
+        if (!btn)
+            return;
+        if (btn.dataset.clear) {
+            recent = [];
+            try {
+                localStorage.removeItem(RECENT_KEY);
+            }
+            catch {
+                /* 忽略 */
+            }
+            hideRecent();
+            return;
+        }
+        const q = btn.dataset.q || '';
+        if (!q)
+            return;
+        searchInput.value = q;
+        hideRecent();
+        runSearch();
+        searchInput.focus();
+    });
+    searchInput.addEventListener('focus', renderRecent);
+    searchInput.addEventListener('blur', () => window.setTimeout(hideRecent, 160));
+    // 输入停顿 700ms 才记一条：每敲一个字都记的话，历史里全是「南」「南京」「南京条」这种半成品
+    let recentTimer = 0;
+    const scheduleRecent = () => {
+        window.clearTimeout(recentTimer);
+        const q = searchInput.value.trim();
+        if (q.length < 2)
+            return;
+        recentTimer = window.setTimeout(() => saveRecent(q), 700);
+    };
+    searchInput.addEventListener('input', () => {
+        hideRecent();
+        runSearch();
+        scheduleRecent();
+    });
     searchFilter.addEventListener('change', () => {
         if (searchInput.value.trim())
             runSearch();
@@ -341,6 +440,7 @@ async function boot() {
             return;
         }
         if (ev.key === 'Enter' && hits.length) {
+            saveRecent(searchInput.value);
             pickHit(hits[Math.min(cursor, hits.length - 1)]);
             return;
         }
