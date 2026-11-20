@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-20T06:30:21.574Z",
+  "builtAt": "2026-11-20T10:28:25.153Z",
   "counts": {
     "event": 677,
     "person": 1080,
@@ -1124,7 +1124,7 @@
     {
       "key": "theme/1840s",
       "entities": 14,
-      "bytes": 90871,
+      "bytes": 91109,
       "timeSpan": [
         1840,
         1847
@@ -1142,7 +1142,7 @@
     {
       "key": "theme/1860s",
       "entities": 3,
-      "bytes": 18879,
+      "bytes": 19110,
       "timeSpan": [
         1861,
         1867
@@ -1196,7 +1196,7 @@
     {
       "key": "theme/1920s",
       "entities": 2,
-      "bytes": 9354,
+      "bytes": 9483,
       "timeSpan": [
         1920,
         1921
@@ -1205,7 +1205,7 @@
     {
       "key": "theme/1930s",
       "entities": 1,
-      "bytes": 5018,
+      "bytes": 5137,
       "timeSpan": [
         1933,
         1933

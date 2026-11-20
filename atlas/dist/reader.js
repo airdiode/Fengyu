@@ -87,6 +87,10 @@ export function renderReader(t, byId) {
 </section>`;
     })
         .join('');
+    // 配套站的链接：一行普通链接，不做成卡片（2026-11-20，用户只要求链接）
+    const further = (t.further || [])
+        .map((f) => `<a href="${esc(f.href)}" target="_blank" rel="noreferrer">${esc(f.label)}</a>`)
+        .join(' · ');
     return `<div class="rd">
   <header class="rd-head">
     <div class="rd-kicker">专题 · ${sections.length} 章 · ${total} 条${badges.size ? ` · 带数 ${badges.size} 条` : ''}</div>
@@ -97,6 +101,7 @@ export function renderReader(t, byId) {
   </header>
   <nav class="rd-toc">${toc}</nav>
   <div class="rd-body">${body}</div>
+  ${further ? `<p class="rd-further">延伸：${further}</p>` : ''}
   <footer class="rd-foot">点任意条目展开详情 · Esc 关闭</footer>
 </div>`;
 }
