@@ -98,10 +98,10 @@ export function renderReader(t, byId) {
     ${t.question ? `<p class="rd-q">${esc(label(t.question))}</p>` : ''}
     ${t.summary ? `<p class="rd-lede-2">${esc(label(t.summary))}</p>` : ''}
     <div class="rd-meta">${esc(years)}${refs.length ? ` · 参考 ${refs.map(esc).join('、')}` : ''}</div>
+    ${further ? `<p class="rd-further">延伸：${further}</p>` : ''}
   </header>
   <nav class="rd-toc">${toc}</nav>
   <div class="rd-body">${body}</div>
-  ${further ? `<p class="rd-further">延伸：${further}</p>` : ''}
   <footer class="rd-foot">点任意条目展开详情 · Esc 关闭</footer>
 </div>`;
 }
