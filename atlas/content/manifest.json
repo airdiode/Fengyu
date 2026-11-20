@@ -1,8 +1,8 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-19T14:53:52.765Z",
+  "builtAt": "2026-11-20T05:12:57.412Z",
   "counts": {
-    "event": 638,
+    "event": 673,
     "person": 1080,
     "organization": 47,
     "place": 65,
@@ -11,14 +11,14 @@
     "territory": 26,
     "group": 43,
     "asset": 1,
-    "theme": 34,
+    "theme": 36,
     "technology": 16,
     "instrument": 6,
     "institution": 139,
     "work": 33,
     "practice": 5
   },
-  "total": 2193,
+  "total": 2230,
   "shards": [
     {
       "key": "asset/0s",
@@ -58,8 +58,8 @@
     },
     {
       "key": "event/1860s",
-      "entities": 37,
-      "bytes": 28296,
+      "entities": 38,
+      "bytes": 32100,
       "timeSpan": [
         1860,
         1869
@@ -94,8 +94,8 @@
     },
     {
       "key": "event/1900s",
-      "entities": 85,
-      "bytes": 48413,
+      "entities": 86,
+      "bytes": 50605,
       "timeSpan": [
         1900,
         1909
@@ -103,8 +103,8 @@
     },
     {
       "key": "event/1910s",
-      "entities": 88,
-      "bytes": 62789,
+      "entities": 90,
+      "bytes": 67704,
       "timeSpan": [
         1910,
         1919
@@ -112,8 +112,8 @@
     },
     {
       "key": "event/1920s",
-      "entities": 70,
-      "bytes": 54690,
+      "entities": 78,
+      "bytes": 71732,
       "timeSpan": [
         1920,
         1929
@@ -121,8 +121,8 @@
     },
     {
       "key": "event/1930s",
-      "entities": 82,
-      "bytes": 68312,
+      "entities": 100,
+      "bytes": 119408,
       "timeSpan": [
         1930,
         1939
@@ -130,8 +130,8 @@
     },
     {
       "key": "event/1940s",
-      "entities": 72,
-      "bytes": 62523,
+      "entities": 77,
+      "bytes": 74959,
       "timeSpan": [
         1940,
         1949
@@ -383,7 +383,7 @@
     {
       "key": "institution/1930s",
       "entities": 11,
-      "bytes": 11397,
+      "bytes": 12399,
       "timeSpan": [
         1930,
         1938
@@ -1141,11 +1141,11 @@
     },
     {
       "key": "theme/1860s",
-      "entities": 2,
-      "bytes": 13299,
+      "entities": 3,
+      "bytes": 18879,
       "timeSpan": [
         1861,
-        1861
+        1867
       ]
     },
     {
@@ -1182,6 +1182,15 @@
       "timeSpan": [
         1911,
         1912
+      ]
+    },
+    {
+      "key": "theme/1920s",
+      "entities": 1,
+      "bytes": 5582,
+      "timeSpan": [
+        1921,
+        1921
       ]
     },
     {

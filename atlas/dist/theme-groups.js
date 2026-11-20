@@ -31,7 +31,13 @@ export const THEME_GROUPS = [
     {
         // 厂矿、铁路、货币
         title: '经济与基建',
-        ids: ['theme.yangwu', 'theme.rails', 'theme.currency'],
+        ids: [
+            'theme.yangwu',
+            'theme.rails',
+            'theme.currency',
+            'theme.money1940s',
+            'theme.prices-wages',
+        ],
     },
     {
         // 城里人怎么过日子，女性这一百年（三篇放在一起）
