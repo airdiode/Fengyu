@@ -16,6 +16,7 @@ export const THEME_GROUPS = [
             'theme.ruoguo-shijie',
             'theme.frontier',
             'theme.mongol-nationalism',
+            'theme.opium2',
         ],
     },
     {
