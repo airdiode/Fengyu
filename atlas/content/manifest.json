@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-20T06:26:20.069Z",
+  "builtAt": "2026-11-20T06:30:21.574Z",
   "counts": {
     "event": 677,
     "person": 1080,
@@ -11,14 +11,14 @@
     "territory": 26,
     "group": 43,
     "asset": 1,
-    "theme": 39,
+    "theme": 40,
     "technology": 16,
     "instrument": 6,
     "institution": 139,
     "work": 33,
     "practice": 5
   },
-  "total": 2237,
+  "total": 2238,
   "shards": [
     {
       "key": "asset/0s",
@@ -113,7 +113,7 @@
     {
       "key": "event/1920s",
       "entities": 78,
-      "bytes": 73810,
+      "bytes": 74621,
       "timeSpan": [
         1920,
         1929
@@ -1195,10 +1195,10 @@
     },
     {
       "key": "theme/1920s",
-      "entities": 1,
-      "bytes": 5582,
+      "entities": 2,
+      "bytes": 9354,
       "timeSpan": [
-        1921,
+        1920,
         1921
       ]
     },

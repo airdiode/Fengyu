@@ -27,7 +27,7 @@ export const THEME_GROUPS = [
     {
         // 民国谁在台上、谁在名单里
         title: '民国政制与人物',
-        ids: ['theme.north-cabinet', 'theme.north-presidents', 'theme.roc-power', 'theme.roster-1949'],
+        ids: ['theme.north-cabinet', 'theme.north-presidents', 'theme.roc-power', 'theme.roster-1949', 'theme.warlords'],
     },
     {
         // 厂矿、铁路、货币
