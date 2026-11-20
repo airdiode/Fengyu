@@ -37,6 +37,7 @@ export const THEME_GROUPS = [
             'theme.currency',
             'theme.money1940s',
             'theme.prices-wages',
+            'theme.wartime-economy',
         ],
     },
     {
