@@ -16,13 +16,13 @@ export const THEME_GROUPS = [
             'theme.ruoguo-shijie',
             'theme.frontier',
             'theme.mongol-nationalism',
-            'theme.opium2',
+            'theme.sino-french',
         ],
     },
     {
         // 清末这七十年：内乱、宫廷、新政、革命
         title: '晚清变局',
-        ids: ['theme.taiping', 'theme.chuilian', 'theme.qing-power', 'theme.xinzheng', 'theme.xinhai'],
+        ids: ['theme.taiping', 'theme.chuilian', 'theme.qing-power', 'theme.xinzheng', 'theme.xinhai', 'theme.opium2'],
     },
     {
         // 民国谁在台上、谁在名单里
