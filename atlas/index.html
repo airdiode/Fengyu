@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>风雨如磐 · 中国近代史知识库</title>
     <link rel="stylesheet" href="dist/style.css" />
+    <style>
+      /* 首屏载入进度条（2026-11-20）：内联在这里，style.css 还没到时线就先动着；
+             main.ts 在 first-paint 时加 .done 补满、再 .hide 淡出。纯装饰，不拦点击。 */
+      .loadbar { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 90; pointer-events: none; }
+      .loadbar span {
+        display: block; height: 100%; width: 0;
+        background: linear-gradient(90deg, var(--seal, #a8382a), #c98a3f);
+        box-shadow: 0 0 6px rgba(168, 56, 42, .45);
+        animation: loadbar-grow 6s cubic-bezier(.12, .62, .3, 1) forwards;
+      }
+      .loadbar.done span { animation: none; width: 100%; transition: width .22s ease-out; }
+      .loadbar.hide { opacity: 0; transition: opacity .42s ease .1s; }
+      @keyframes loadbar-grow {
+        0% { width: 3%; }
+        35% { width: 42%; }
+        65% { width: 68%; }
+        100% { width: 88%; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .loadbar span { animation: none; width: 88%; }
+        .loadbar.done span, .loadbar.hide { transition: none; }
+      }
+    </style>
     <!-- modulepreload:begin（pnpm build 维护，勿手改） -->
     <link rel="modulepreload" href="dist/arrow.js" />
     <link rel="modulepreload" href="dist/concurrency.js" />
@@ -43,6 +66,9 @@
     <meta name="feedback-email" content="contact@airdiode.com" />
   </head>
   <body>
+    <!-- 首屏载入进度条（2026-11-20）：CSS 动画先行，main.ts 在 first-paint 时补满并淡出。
+         放在 body 最前，JS 还没下完也能看到进度；aria-hidden，纯装饰。 -->
+    <div id="loadbar" class="loadbar" aria-hidden="true"><span></span></div>
     <header id="topbar">
       <h1 class="brand">风雨如磐<span class="brand-sub">1840 – 1949</span></h1>
       <div id="controls">

@@ -21,6 +21,16 @@ async function boot() {
             performance.mark('fengyu:' + name);
     };
     markStage('boot');
+    /** 首屏进度条：走过去由 CSS 动画负责，这里只管「到了就补满、淡出」（见 index.html/.loadbar） */
+    const loadbar = document.getElementById('loadbar');
+    const finishLoadbar = () => {
+        if (!loadbar || loadbar.classList.contains('done'))
+            return;
+        loadbar.classList.add('done');
+        setTimeout(() => loadbar.classList.add('hide'), 240);
+    };
+    // 兜底：脚本中途出错（或某个请求永远不回）时，别让那条线一直挂在顶上
+    setTimeout(finishLoadbar, 20000);
     // 三样东西互不依赖，全部在同一个 tick 里发出去；**发出去的顺序就是优先级**：
     // 底图轮廓（100 KB）→ 内容（首屏要点得动它）→ 疆域快照 → 辅助图层。
     // 原来是一路 await 下去，每个文件一次往返；而本地 dev 服务器是 HTTP/1.1（每域 6 条连接），
@@ -927,6 +937,7 @@ async function boot() {
     syncYear();
     markStage('first-paint');
     markStage('done');
+    finishLoadbar();
     console.log('[fengyu] loaded', data.manifest.total, 'entities', label({ 'zh-Hans': 'ok' }));
     // 殖民地的判定面最后补：它们不画、只服务悬停，首屏为它们等 1.6 MB 不值得（§4.336）。
     // 在此之前悬停不会报「英属印度」这类归属，其余（租借地、割地、占领区）照常。
@@ -939,5 +950,6 @@ async function boot() {
 }
 boot().catch((err) => {
     console.error(err);
+    document.getElementById('loadbar')?.classList.add('done', 'hide');
     document.getElementById('panel-body').textContent = `加载失败：${String(err)}`;
 });
