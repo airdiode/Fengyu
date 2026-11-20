@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-20T05:23:57.505Z",
+  "builtAt": "2026-11-20T05:47:12.427Z",
   "counts": {
     "event": 673,
     "person": 1080,
@@ -77,7 +77,7 @@
     {
       "key": "event/1880s",
       "entities": 39,
-      "bytes": 33119,
+      "bytes": 34438,
       "timeSpan": [
         1880,
         1889
@@ -86,7 +86,7 @@
     {
       "key": "event/1890s",
       "entities": 54,
-      "bytes": 39227,
+      "bytes": 42249,
       "timeSpan": [
         1890,
         1899
@@ -104,7 +104,7 @@
     {
       "key": "event/1910s",
       "entities": 90,
-      "bytes": 67704,
+      "bytes": 68771,
       "timeSpan": [
         1910,
         1919
@@ -113,7 +113,7 @@
     {
       "key": "event/1920s",
       "entities": 78,
-      "bytes": 71732,
+      "bytes": 73453,
       "timeSpan": [
         1920,
         1929
@@ -122,7 +122,7 @@
     {
       "key": "event/1930s",
       "entities": 100,
-      "bytes": 119408,
+      "bytes": 119783,
       "timeSpan": [
         1930,
         1939
@@ -1160,7 +1160,7 @@
     {
       "key": "theme/1890s",
       "entities": 4,
-      "bytes": 30520,
+      "bytes": 31357,
       "timeSpan": [
         1891,
         1898
@@ -1178,7 +1178,7 @@
     {
       "key": "theme/1910s",
       "entities": 5,
-      "bytes": 22787,
+      "bytes": 23183,
       "timeSpan": [
         1911,
         1912
