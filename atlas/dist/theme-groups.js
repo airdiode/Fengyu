@@ -76,6 +76,11 @@ export const THEME_GROUPS = [
         title: '读书与探访',
         ids: ['theme.city-walks', 'theme.person-trails', 'theme.kong-lineage'],
     },
+    {
+        // 抗战这一场大搬家：文物、学校与人怎么走到西南
+        title: '抗战中的迁徙与后方',
+        ids: ['theme.wenwu-nanqian', 'theme.daxue-qianyi', 'theme.chongqing-bombing'],
+    },
 ];
 /** 把专题实体按上面的表分组；表里没有的落「其他」，保证一条都不丢。 */
 export function groupThemes(themes) {

@@ -1,1 +1,0 @@
-{"key":"instrument/1880s","entities":[{"id":"instrument.longyang","type":"instrument","labels":{"zh-Hans":"龙洋"},"time":{"kind":"interval","start":"1889","end":"1914","precision":"year"},"kind":"currency","denomination":{"zh-Hans":"银元一元 · 广东造币厂始铸"},"summary":{"zh-Hans":"1889 年广东钱局开铸，各省随后仿铸，是中国自铸银元的开始。"},"sources":[{"ref":"source.《中国货币史》"}],"tags":["货币","银元"]}]}

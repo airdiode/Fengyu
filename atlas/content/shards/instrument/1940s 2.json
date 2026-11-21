@@ -1,1 +1,0 @@
-{"key":"instrument/1940s","entities":[{"id":"instrument.jinyuanquan","type":"instrument","labels":{"zh-Hans":"金圆券"},"time":{"kind":"interval","start":"1948-08","end":"1949-07","precision":"month"},"kind":"currency","denomination":{"zh-Hans":"纸币 · 1 元折法币 300 万元"},"summary":{"zh-Hans":"1948 年 8 月发行，以金圆为本位强制收兑金银外币，十个月即崩盘。"},"sources":[{"ref":"source.《中国货币史》"}],"tags":["货币","纸币"]}]}
