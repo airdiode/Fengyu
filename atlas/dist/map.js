@@ -2260,23 +2260,27 @@ export class MapView {
         if (!rings?.length)
             return;
         const ctx = this.ctx;
+        const base = this.hoverArea.startsWith('war-base:');
         ctx.save();
         ctx.beginPath();
         for (const ring of rings) {
-            const shift = this.worldShift(ring);
-            ring.forEach(([lng, lat], i) => {
-                const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat));
-                if (i === 0)
-                    ctx.moveTo(x, y);
-                else
-                    ctx.lineTo(x, y);
-            });
-            ctx.closePath();
+            if (base)
+                this.traceSmoothRing(ctx, ring, vw, vh);
+            else {
+                const shift = this.worldShift(ring);
+                ring.forEach(([lng, lat], i) => {
+                    const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat));
+                    if (i === 0)
+                        ctx.moveTo(x, y);
+                    else
+                        ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+            }
         }
-        const soft = this.hoverArea.startsWith('war-base:');
-        ctx.fillStyle = soft ? 'rgba(42,32,20,.1)' : 'rgba(42,32,20,.16)';
+        ctx.fillStyle = base ? 'rgba(42,32,20,.1)' : 'rgba(42,32,20,.16)';
         ctx.fill('evenodd');
-        if (!soft) {
+        if (!base) {
             ctx.strokeStyle = 'rgba(58,42,24,.85)';
             ctx.lineWidth = 1.8;
             ctx.stroke();
@@ -2290,6 +2294,27 @@ export class MapView {
         if (this.year < 1940 || this.year >= 1941)
             return null;
         return this.geo?.war || null;
+    }
+    /** 把一个环画成闭合的二次贝塞尔曲线：每个顶点当控制点、边中点当端点，
+     *  折线就变成圆滑的过渡（根据地是手绘示意面，没有笔直的边）。 */
+    traceSmoothRing(ctx, ring, vw, vh) {
+        if (ring.length < 3)
+            return;
+        const shift = this.worldShift(ring);
+        const pts = ring.map(([lng, lat]) => screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat)));
+        const mid = (a, b) => [
+            (a[0] + b[0]) / 2,
+            (a[1] + b[1]) / 2,
+        ];
+        const start = mid(pts[pts.length - 1], pts[0]);
+        ctx.moveTo(start[0], start[1]);
+        for (let i = 0; i < pts.length; i++) {
+            const cur = pts[i];
+            const next = pts[(i + 1) % pts.length];
+            const m = mid(cur, next);
+            ctx.quadraticCurveTo(cur[0], cur[1], m[0], m[1]);
+        }
+        ctx.closePath();
     }
     /** 1940 年态势：伪政权名义辖区（低透明）+ 根据地示意面 + 占领城市 + 控制铁路 */
     drawWar(vw, vh) {
@@ -2344,42 +2369,23 @@ export class MapView {
                 continue;
             ctx.save();
             ctx.beginPath();
-            for (const ring of b.rings) {
-                const shift = this.worldShift(ring);
-                ring.forEach(([lng, lat], i) => {
-                    const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat));
-                    if (i === 0)
-                        ctx.moveTo(x, y);
-                    else
-                        ctx.lineTo(x, y);
-                });
-                ctx.closePath();
-            }
-            // 根据地不是行政区：不描硬边。填充 + 几圈很淡的宽描边做过渡，
-            // 有 filter 的浏览器再叠一层模糊填充，边缘就化开了。
+            // 手绘环的顶点用二次贝塞尔连成闭合曲线，不要直线段
+            for (const ring of b.rings)
+                this.traceSmoothRing(ctx, ring, vw, vh);
             ctx.globalAlpha = 0.2;
             ctx.fillStyle = '#4a6b3f';
             ctx.fill('evenodd');
             const pattern = this.hatch('#4a6b3f');
             if (pattern) {
-                ctx.globalAlpha = 0.14;
+                ctx.globalAlpha = 0.12;
                 ctx.fillStyle = pattern;
                 ctx.fill('evenodd');
             }
-            for (const [w, a] of [[12, 0.05], [7, 0.07], [3, 0.1]]) {
-                ctx.globalAlpha = a;
-                ctx.strokeStyle = '#4a6b3f';
-                ctx.lineWidth = w;
-                ctx.stroke();
-            }
-            const wctx = ctx;
-            if (typeof wctx.filter === 'string') {
-                wctx.filter = 'blur(6px)';
-                ctx.globalAlpha = 0.18;
-                ctx.fillStyle = '#4a6b3f';
-                ctx.fill('evenodd');
-                wctx.filter = 'none';
-            }
+            // 边界还是有的，但只是沿曲线的一条细边，不描折线、不做晕染
+            ctx.globalAlpha = 0.5;
+            ctx.strokeStyle = '#4a6b3f';
+            ctx.lineWidth = 0.9;
+            ctx.stroke();
             ctx.restore();
         }
         // 3. 日军控制铁路：沿用路线几何，赭红虚线
