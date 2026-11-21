@@ -79,6 +79,8 @@ export class MapView {
     baseNote = '';
     /** 被用户关掉的实体类型（目前只有人物），不上图、不出标签、不进图例 */
     hiddenTypes = new Set();
+    /** 鼠标压住的区域（warlord:zhili / region:manchukuo / cession:…）：画一层深色，表示「正在看这一块」 */
+    hoverArea = null;
     layers = {
         graticule: true,
         tropic: true,
@@ -155,6 +157,7 @@ export class MapView {
         if (!(key in this.layers))
             return;
         this.layers[key] = on;
+        this.hoverArea = null;
         this.draw();
     }
     /** 内容开关：目前只用于「人物」；关掉后点、活动地、人物名一起隐藏 */
@@ -581,6 +584,8 @@ export class MapView {
                 return;
             this.lastHoverKey = key;
             this.hover = h;
+            // 区域命中时记住它：draw 的最后会补一层深色，表示「鼠标压着这一块」
+            this.hoverArea = h?.kind === 'area' ? h.id : null;
             this.onHover(t, { x: sx, y: sy });
             this.draw(); // 重画一次，让高亮跟着走
         };
@@ -933,6 +938,8 @@ export class MapView {
         this.canvas.addEventListener('mouseleave', () => {
             this.lastHoverKey = '';
             this.onHover(null);
+            this.hoverArea = null;
+            this.draw();
         });
         this.canvas.addEventListener('wheel', (ev) => {
             ev.preventDefault();
@@ -1215,6 +1222,7 @@ export class MapView {
         this.drawSouthSea(vw, vh);
         this.drawRailways(vw, vh);
         this.drawConcessions(vw, vh);
+        this.drawAreaHover(vw, vh);
         this.drawClimateDots(vw, vh);
         this.hits = [];
         this.lineHits = [];
@@ -2155,6 +2163,70 @@ export class MapView {
             ctx.restore();
         }
         ctx.globalAlpha = 1;
+    }
+    /** 把 hoverArea 解析成环：新加的区域图层只要按 `前缀:key` 发 area 命中，就在这里补一条 */
+    areaRingsFor(id) {
+        const g = this.geo;
+        if (!g)
+            return null;
+        const i = id.indexOf(':');
+        const kind = i < 0 ? id : id.slice(0, i);
+        const key = i < 0 ? '' : id.slice(i + 1);
+        if (kind === 'warlord') {
+            const p = g.warlordProvinces.find((x) => x.id === key);
+            return p?.rings || null;
+        }
+        if (kind === 'region') {
+            const r = g.regions.find((x) => x.id === key && this.year >= x.from && this.year < x.to);
+            return r?.rings || null;
+        }
+        if (kind === 'sphere') {
+            const s = g.spheres.find((x) => x.id === key && this.year >= x.from && this.year < x.to);
+            return s?.rings || null;
+        }
+        if (kind === 'cession') {
+            const c = cessionsAt(g, this.year).find((x) => x.id === key);
+            return c?.rings || null;
+        }
+        if (kind === 'concession') {
+            const c = g.concessions.find((x) => x.id === key && this.year >= x.from && this.year < x.to);
+            return c ? c.rings || [c.ring] : null;
+        }
+        if (kind === 'taiping') {
+            return taipingAt(g, this.year)?.rings || null;
+        }
+        return null;
+    }
+    /**
+     * 区域悬停的深色层：不按图层各写一遍，统一画在区域填充之上、点线之下。
+     * 以后日军占领区、解放区只要发 `area` 命中并在这里加一条解析，就自动有这个效果。
+     */
+    drawAreaHover(vw, vh) {
+        if (!this.hoverArea)
+            return;
+        const rings = this.areaRingsFor(this.hoverArea);
+        if (!rings?.length)
+            return;
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.beginPath();
+        for (const ring of rings) {
+            const shift = this.worldShift(ring);
+            ring.forEach(([lng, lat], i) => {
+                const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat));
+                if (i === 0)
+                    ctx.moveTo(x, y);
+                else
+                    ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+        }
+        ctx.fillStyle = 'rgba(42,32,20,.16)';
+        ctx.fill('evenodd');
+        ctx.strokeStyle = 'rgba(58,42,24,.85)';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.restore();
     }
     /** 傀儡政权（满洲国）与卫星国（蒙古）：画在疆域之上，斜线表示实控 */
     drawRegions(vw, vh) {
