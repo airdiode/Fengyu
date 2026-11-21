@@ -253,6 +253,12 @@ const TABLE = {
     ...CESSIONS,
     ...REGIONS,
 };
+const WAR = {
+    source: '沦陷城市时间据维基各城市条目与《中国抗日战争正面战场作战记》；伪政权名义辖区据维基汪精卫政权/华北政务委员会/蒙疆联合自治政府；根据地范围据各根据地条目与常见分布',
+    method: '占领城市/铁路为点线，伪政权为省级名义辖区（低透明），根据地为手绘示意面；不是控制边界',
+    precision: '城市点位 0.05°；伪政权为整省名义范围（远大于实际控制）；根据地示意面 0.2–0.5°',
+    confidence: '中低：1940 年一期试点，占领区与根据地都是点线面混合，实际控制远比面破碎',
+};
 const WARLORD = {
     source: 'CHGIS V6 1911 府级界线（按 LEV1 合并的省级近似环）+ 各省军政长官任期表；1925 年与日本参谋本部《支那分争地图》（大正十四年十一月十二日调）对照',
     method: '按该省军政长官（督军／督办／都统／省主席）的派系归属上色；九期快照（1911–38），不是逐年控制线，也不代表省内没有别的军队',
@@ -278,5 +284,7 @@ export function provenanceFor(id) {
         return GEO;
     if (id.startsWith('warlord:'))
         return WARLORD;
+    if (id.startsWith('war'))
+        return WAR;
     return undefined;
 }

@@ -1,10 +1,10 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-21T11:30:27.781Z",
+  "builtAt": "2026-11-21T14:57:13.915Z",
   "counts": {
     "event": 697,
     "person": 1285,
-    "organization": 57,
+    "organization": 65,
     "place": 65,
     "route": 64,
     "front": 10,
@@ -18,7 +18,7 @@
     "work": 33,
     "practice": 5
   },
-  "total": 2503,
+  "total": 2511,
   "shards": [
     {
       "key": "asset/0s",
@@ -567,10 +567,22 @@
       ]
     },
     {
+      "key": "organization/1930s",
+      "entities": 6,
+      "bytes": 4639,
+      "timeSpan": [
+        1937,
+        1939
+      ]
+    },
+    {
       "key": "organization/1940s",
-      "entities": 2,
-      "bytes": 1532,
-      "timeSpan": null
+      "entities": 4,
+      "bytes": 3333,
+      "timeSpan": [
+        1940,
+        1940
+      ]
     },
     {
       "key": "person/1750s",

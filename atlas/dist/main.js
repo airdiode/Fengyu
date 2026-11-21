@@ -81,10 +81,25 @@ async function boot() {
     // 势力范围图例：只列这一年实际存在的列强
     const powerKey = document.getElementById('power-key');
     const warlordKey = document.getElementById('warlord-key');
+    const warKey = document.getElementById('war-key');
     const renderPowerKey = (y) => {
         powerKey.innerHTML = '';
         warlordKey.hidden = true;
         warlordKey.innerHTML = '';
+        warKey.hidden = true;
+        warKey.innerHTML = '';
+        // 1940 抗战态势：与军阀图例不会同年出现，直接放同一位置
+        const war = geoData?.war;
+        if (war && y >= 1940 && y < 1941 && layerState['war']) {
+            warKey.innerHTML =
+                `<b>1940 抗战态势（试点）</b>` +
+                    `<span class="pk"><i style="background:#8a3a2a;border-radius:50%"></i>日军占领城市</span>` +
+                    `<span class="pk"><i style="background:#8a3a2a"></i>日军控制铁路</span>` +
+                    `<span class="pk"><i style="background:#7a4a3a"></i>伪政权名义辖区</span>` +
+                    `<span class="pk"><i style="background:#4a6b3f"></i>抗日根据地</span>` +
+                    `<span class="pk-note">城市/铁路为占领点线；伪政权辖区是名义范围；根据地是示意面。</span>`;
+            warKey.hidden = false;
+        }
         // 军阀势力图例：只在 1916–1928、图层开着时显示；一期一组色块
         const zones = geoData?.warlordZones;
         if (!zones || y < 1911 || y >= 1938)
@@ -776,7 +791,7 @@ async function boot() {
                 const key = input.dataset.layer;
                 layerState[key] = input.checked;
                 map.setLayer(key, input.checked);
-                if (key === 'warlords')
+                if (key === 'warlords' || key === 'war')
                     renderPowerKey(year);
             });
         });

@@ -98,6 +98,7 @@ export class MapView {
         taiping: true,
         march: true,
         warlords: true,
+        war: true,
     };
     /** 检索结果高亮：其余要素压暗，标签只画命中的 */
     highlight = null;
@@ -600,6 +601,18 @@ export class MapView {
             emit({ id: best.id }, { kind: 'point', id: best.id });
             return;
         }
+        // 1.5 1940 年沦陷城市：压在实体点下面一层，但比标签更精确
+        const wc = this.warCityHit(sx, sy, vw, vh);
+        if (wc) {
+            emit({
+                title: `${wc.name} · ${wc.from} 年沦陷`,
+                kind: '日军占领城市',
+                meta: '1940 年抗战态势（试点）',
+                summary: wc.note,
+                provenance: provenanceFor('war-city'),
+            }, { kind: 'point', id: `war-city:${wc.name}` });
+            return;
+        }
         // 2. 标签
         const lb = this.labelHits.find((l) => sx >= l.box.x && sx <= l.box.x + l.box.w && sy >= l.box.y && sy <= l.box.y + l.box.h);
         if (lb) {
@@ -663,6 +676,18 @@ export class MapView {
                 }
             }
         }
+        // 2.9 日军控制铁路：先于普通路线判，避免点开一条空实体的路线
+        const wr = this.warRailwayHit(sx, sy);
+        if (wr) {
+            emit({
+                title: `${wr}（日军控制铁路）`,
+                kind: '日军控制铁路',
+                meta: '1940 年抗战态势（试点）',
+                summary: '线为占领/使用示意，实际控制沿城市与据点；不是一条精确的控制边界。',
+                provenance: provenanceFor('war-rail'),
+            }, { kind: 'line', id: `war-rail:${wr}` });
+            return;
+        }
         // 3. 线（路线、战线）：取**最近**的那条，而不是数组里第一条。
         // 北京、南京这些枢纽上铁路与出访路线叠在一起，按顺序取第一条会永远命中铁路
         let bestLine = null;
@@ -682,6 +707,18 @@ export class MapView {
         const lng = mx;
         const lat = unmercY(my);
         const g = this.geo;
+        // 4.0 伪政权 / 根据地：先于太平天国与列强势力范围
+        const wa = this.warAreaAt(lng, lat);
+        if (wa) {
+            const areaId = `war-${wa.kind}:${wa.p.id}`;
+            if (wa.p.entity) {
+                emit({ id: wa.p.entity }, { kind: 'area', id: areaId });
+            }
+            else {
+                emit({ title: wa.p.label, kind: wa.kind === 'puppet' ? '伪政权' : '抗日根据地', summary: wa.p.note }, { kind: 'area', id: areaId });
+            }
+            return;
+        }
         if (g && this.layers.taiping) {
             const period = taipingAt(g, this.year);
             if (period && pointInRings(lng, lat, period.rings)) {
@@ -1218,6 +1255,7 @@ export class MapView {
         this.drawTaiping(vw, vh);
         this.drawWarlords(vw, vh);
         this.drawRegions(vw, vh);
+        this.drawWar(vw, vh);
         this.drawLeagues(vw, vh);
         this.drawClaimExtra(vw, vh);
         this.drawCessions(vw, vh);
@@ -2199,6 +2237,16 @@ export class MapView {
         if (kind === 'taiping') {
             return taipingAt(g, this.year)?.rings || null;
         }
+        if (kind === 'war-puppet') {
+            const p = g.war?.puppets.find((x) => x.id === key && this.year >= x.from && this.year < x.to);
+            if (!p)
+                return null;
+            return p.provinces.flatMap((pid) => g.warlordProvinces.find((x) => x.id === pid)?.rings || []);
+        }
+        if (kind === 'war-base') {
+            const b = g.war?.bases.find((x) => x.id === key && this.year >= x.from && this.year < x.to);
+            return b?.rings || null;
+        }
         return null;
     }
     /**
@@ -2231,6 +2279,182 @@ export class MapView {
         ctx.lineWidth = 1.8;
         ctx.stroke();
         ctx.restore();
+    }
+    /** 1940 年抗战态势（试点）；图层不在这一年或没开就返回 null */
+    warDocAt() {
+        if (!this.layers.war)
+            return null;
+        if (this.year < 1940 || this.year >= 1941)
+            return null;
+        return this.geo?.war || null;
+    }
+    /** 1940 年态势：伪政权名义辖区（低透明）+ 根据地示意面 + 占领城市 + 控制铁路 */
+    drawWar(vw, vh) {
+        const g = this.geo;
+        const w = this.warDocAt();
+        if (!g || !w)
+            return;
+        const ctx = this.ctx;
+        const prov = new Map(g.warlordProvinces.map((p) => [p.id, p]));
+        // 1. 伪政权：省级名义辖区，低透明 + 斜线 + 虚线边（实际控制只在点线）
+        for (const p of w.puppets) {
+            if (this.year < p.from || this.year >= p.to)
+                continue;
+            ctx.save();
+            ctx.beginPath();
+            for (const pid of p.provinces) {
+                const shape = prov.get(pid);
+                if (!shape)
+                    continue;
+                for (const ring of shape.rings) {
+                    const shift = this.worldShift(ring);
+                    ring.forEach(([lng, lat], i) => {
+                        const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat));
+                        if (i === 0)
+                            ctx.moveTo(x, y);
+                        else
+                            ctx.lineTo(x, y);
+                    });
+                    ctx.closePath();
+                }
+            }
+            ctx.globalAlpha = 0.1;
+            ctx.fillStyle = '#7a4a3a';
+            ctx.fill('evenodd');
+            const pattern = this.hatch('#7a4a3a');
+            if (pattern) {
+                ctx.globalAlpha = 0.14;
+                ctx.fillStyle = pattern;
+                ctx.fill('evenodd');
+            }
+            ctx.globalAlpha = 0.55;
+            ctx.setLineDash([5, 4]);
+            ctx.strokeStyle = '#7a4a3a';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+        }
+        // 2. 根据地：示意面，绿色实线边
+        for (const b of w.bases) {
+            if (this.year < b.from || this.year >= b.to)
+                continue;
+            ctx.save();
+            ctx.beginPath();
+            for (const ring of b.rings) {
+                const shift = this.worldShift(ring);
+                ring.forEach(([lng, lat], i) => {
+                    const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat));
+                    if (i === 0)
+                        ctx.moveTo(x, y);
+                    else
+                        ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+            }
+            ctx.globalAlpha = 0.22;
+            ctx.fillStyle = '#4a6b3f';
+            ctx.fill('evenodd');
+            const pattern = this.hatch('#4a6b3f');
+            if (pattern) {
+                ctx.globalAlpha = 0.18;
+                ctx.fillStyle = pattern;
+                ctx.fill('evenodd');
+            }
+            ctx.globalAlpha = 0.8;
+            ctx.strokeStyle = '#4a6b3f';
+            ctx.lineWidth = 1.1;
+            ctx.stroke();
+            ctx.restore();
+        }
+        // 3. 日军控制铁路：沿用路线几何，赭红虚线
+        for (const r of w.railways) {
+            if (this.year < r.from || (r.to && this.year >= r.to))
+                continue;
+            const e = this.entities.find((x) => x.id === r.route);
+            if (!e)
+                continue;
+            for (const line of (e.space?.lines || []).filter((l) => lineActiveAt(l, this.year))) {
+                const pts = (line.geometry.coordinates || []).map(([lng, lat]) => screenOf(this.cam, vw, vh, mercX(lng), mercY(lat)));
+                if (pts.length < 2)
+                    continue;
+                ctx.save();
+                ctx.beginPath();
+                pts.forEach(([x, y], i) => (i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)));
+                ctx.setLineDash([7, 4]);
+                ctx.strokeStyle = 'rgba(138,58,42,.75)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.restore();
+                this.lineHits.push({ id: `war-rail:${r.route}`, pts: pts.map(([x, y]) => ({ x, y })), color: '#8a3a2a' });
+            }
+        }
+        // 4. 沦陷城市：赭红点 + 白边
+        for (const c of w.cities) {
+            if (this.year < c.from || (c.to && this.year >= c.to))
+                continue;
+            const [x, y] = screenOf(this.cam, vw, vh, mercX(c.coord[0]), mercY(c.coord[1]));
+            if (x < -20 || y < -20 || x > vw + 20 || y > vh + 20)
+                continue;
+            ctx.beginPath();
+            ctx.arc(x, y, 4.2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,253,247,.9)';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x, y, 2.8, 0, Math.PI * 2);
+            ctx.fillStyle = '#8a3a2a';
+            ctx.fill();
+        }
+    }
+    /** 沦陷城市命中：离点 6px 以内 */
+    warCityHit(sx, sy, vw, vh) {
+        const w = this.warDocAt();
+        if (!w)
+            return null;
+        for (const c of w.cities) {
+            if (this.year < c.from || (c.to && this.year >= c.to))
+                continue;
+            const [x, y] = screenOf(this.cam, vw, vh, mercX(c.coord[0]), mercY(c.coord[1]));
+            if (Math.hypot(x - sx, y - sy) <= 6)
+                return c;
+        }
+        return null;
+    }
+    /** 日军控制铁路命中：看 lineHits 里带 war-rail: 前缀的那几条 */
+    warRailwayHit(sx, sy) {
+        for (const l of this.lineHits) {
+            if (!l.id.startsWith('war-rail:'))
+                continue;
+            for (let i = 1; i < l.pts.length; i++) {
+                if (distToSegment(sx, sy, l.pts[i - 1], l.pts[i]) <= 6)
+                    return l.id.slice('war-rail:'.length);
+            }
+        }
+        return null;
+    }
+    /** 伪政权/根据地命中：返回类型与条目 */
+    warAreaAt(lng, lat) {
+        const g = this.geo;
+        const w = this.warDocAt();
+        if (!g || !w)
+            return null;
+        for (const p of w.puppets) {
+            if (this.year < p.from || this.year >= p.to)
+                continue;
+            for (const pid of p.provinces) {
+                const shape = g.warlordProvinces.find((x) => x.id === pid);
+                if (shape && pointInRings(lng, lat, shape.rings))
+                    return { kind: 'puppet', p };
+            }
+        }
+        for (const b of w.bases) {
+            if (this.year < b.from || this.year >= b.to)
+                continue;
+            if (pointInRings(lng, lat, b.rings))
+                return { kind: 'base', p: b };
+        }
+        return null;
     }
     /** 傀儡政权（满洲国）与卫星国（蒙古）：画在疆域之上，斜线表示实控 */
     drawRegions(vw, vh) {
@@ -2848,6 +3072,51 @@ export class MapView {
                         id,
                         req: { id, text: a.zh, anchor: [x, y], priority: 230, center: true, layer: 'warlord' },
                         meta: { font: 12, color: a.color, entity: '' },
+                    });
+                }
+            }
+        }
+        // 1940 抗战态势：沦陷城市、伪政权、根据地各给一组标签
+        if (this.layers.war) {
+            const w = this.warDocAt();
+            if (w) {
+                for (const c of w.cities) {
+                    if (this.year < c.from || (c.to && this.year >= c.to))
+                        continue;
+                    const [x, y] = proj(c.coord);
+                    if (x < -40 || y < -20 || x > vw + 40 || y > vh + 20)
+                        continue;
+                    const id = `geo:war-city:${c.name}`;
+                    out.push({
+                        id,
+                        req: { id, text: c.name, anchor: [x, y], priority: 245, center: true, layer: 'war' },
+                        meta: { font: 11, color: '#8a3a2a', entity: '' },
+                    });
+                }
+                for (const b of w.bases) {
+                    if (this.year < b.from || this.year >= b.to)
+                        continue;
+                    const [x, y] = proj(b.labelAt);
+                    if (x < -40 || y < -20 || x > vw + 40 || y > vh + 20)
+                        continue;
+                    const id = `geo:war-base:${b.id}`;
+                    out.push({
+                        id,
+                        req: { id, text: b.label, anchor: [x, y], priority: 235, center: true, layer: 'war' },
+                        meta: { font: 11, color: '#4a6b3f', entity: '' },
+                    });
+                }
+                for (const p of w.puppets) {
+                    if (this.year < p.from || this.year >= p.to)
+                        continue;
+                    const [x, y] = proj(p.capital);
+                    if (x < -40 || y < -20 || x > vw + 40 || y > vh + 20)
+                        continue;
+                    const id = `geo:war-puppet:${p.id}`;
+                    out.push({
+                        id,
+                        req: { id, text: p.label, anchor: [x, y], priority: 230, center: true, layer: 'war' },
+                        meta: { font: 11, color: '#7a4a3a', entity: '' },
                     });
                 }
             }

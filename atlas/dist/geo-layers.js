@@ -9,6 +9,15 @@ export const GEO_LAYERS = [
     { key: 'polities', name: '国名', hint: '周边国家按当时国名标注（俄国→苏联）', color: '#8d8471', on: true },
     { key: 'spheres', name: '势力范围', hint: '列强实控区域：殖民地与在华租借地', color: '#b07a8a', on: true },
     {
+        key: 'war',
+        name: '抗战态势',
+        hint: '1940 试点：日军占领城市与铁路、汪伪/华北/蒙疆名义辖区、五块根据地示意面',
+        color: '#7a4a3a',
+        on: true,
+        from: 1940,
+        to: 1941,
+    },
+    {
         key: 'warlords',
         name: '军阀势力',
         hint: '1911–1937 省级控制近似：按军政长官/地方实力派上色，斜线=争夺；不是控制线',
@@ -63,7 +72,7 @@ export const GEO_LAYERS = [
 const emptyGeo = () => ({
     land: [], landDetail: [], lakesDetail: [], riversDetail: [], polities: [], powers: {}, spheres: [], concessions: [], regions: [], railways: [],
     claims: [], cessions: [], cessionLines: [], sphereLines: [], leagues: [], sealanes: [], southSea: null, yellowriver: [], taiping: [],
-    rivers: [], lakes: [], admin1: [], relief: [], wall: [], cities: [], warlordProvinces: [], warlordZones: null,
+    rivers: [], lakes: [], admin1: [], relief: [], wall: [], cities: [], warlordProvinces: [], warlordZones: null, war: null,
     loaded: new Set(),
 });
 /**
@@ -97,6 +106,7 @@ export const GEO_FILES = [
     'cities.json',
     'warlord-provinces.json',
     'warlord-zones.json',
+    'war-1940.json',
 ];
 /**
  * 东亚细节层（10m 海岸线、小河、小湖）：**只在视野里看得到东亚时才取**。
@@ -228,7 +238,7 @@ export function applyDetail(geo, d) {
 }
 export async function loadGeo(base = 'public/geo') {
     const geo = emptyGeo();
-    const [land, polities, spheres, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities, warlordProvinces, warlordZones] = await Promise.all(GEO_FILES.map((name) => getJson(base, name)));
+    const [land, polities, spheres, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities, warlordProvinces, warlordZones, warDoc] = await Promise.all(GEO_FILES.map((name) => getJson(base, name)));
     if (Array.isArray(land))
         geo.land = land;
     const polityDoc = polities;
@@ -271,6 +281,9 @@ export async function loadGeo(base = 'public/geo') {
     const wz = warlordZones;
     if (wz?.provinces)
         geo.warlordZones = wz;
+    const wd = warDoc;
+    if (wd?.cities)
+        geo.war = wd;
     return geo;
 }
 /**
