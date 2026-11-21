@@ -11,11 +11,11 @@ export const GEO_LAYERS = [
     {
         key: 'war',
         name: '抗战态势',
-        hint: '1940 试点：日军占领城市与铁路、汪伪/华北/蒙疆名义辖区、五块根据地示意面',
+        hint: '1937–1945：日军占领城市与铁路、伪政权名义辖区、抗日根据地示意面',
         color: '#7a4a3a',
         on: true,
-        from: 1940,
-        to: 1941,
+        from: 1937,
+        to: 1946,
     },
     {
         key: 'warlords',

@@ -90,9 +90,9 @@ async function boot() {
         warKey.innerHTML = '';
         // 1940 抗战态势：与军阀图例不会同年出现，直接放同一位置
         const war = geoData?.war;
-        if (war && y >= 1940 && y < 1941 && layerState['war']) {
+        if (war && y >= 1937 && y < 1946 && layerState['war']) {
             warKey.innerHTML =
-                `<b>1940 抗战态势（试点）</b>` +
+                `<b>1937–1945 抗战态势</b>` +
                     `<span class="pk"><i style="background:#8a3a2a;border-radius:50%"></i>日军占领城市</span>` +
                     `<span class="pk"><i style="background:#8a3a2a"></i>日军控制铁路</span>` +
                     `<span class="pk"><i style="background:#7a4a3a"></i>伪政权名义辖区</span>` +

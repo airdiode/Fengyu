@@ -563,6 +563,7 @@ figure.asset .prov { display: block; font-size: 10px; opacity: .8; }
 .pk i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; opacity: .8; }
 
 /* ---- 1934 校准图层控件 ---- */
+#overlay-box[hidden] { display: none; }
 #overlay-box {
   margin-top: 8px;
   padding-top: 8px;

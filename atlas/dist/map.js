@@ -601,13 +601,13 @@ export class MapView {
             emit({ id: best.id }, { kind: 'point', id: best.id });
             return;
         }
-        // 1.5 1940 年沦陷城市：压在实体点下面一层，但比标签更精确
+        // 1.5 沦陷城市（1937–45）：压在实体点下面一层，但比标签更精确
         const wc = this.warCityHit(sx, sy, vw, vh);
         if (wc) {
             emit({
                 title: `${wc.name} · ${wc.from} 年沦陷`,
                 kind: '日军占领城市',
-                meta: '1940 年抗战态势（试点）',
+                meta: this.warPeriodAt()?.label || '抗战态势',
                 summary: wc.note,
                 provenance: provenanceFor('war-city'),
             }, { kind: 'point', id: `war-city:${wc.name}` });
@@ -682,7 +682,7 @@ export class MapView {
             emit({
                 title: `${wr}（日军控制铁路）`,
                 kind: '日军控制铁路',
-                meta: '1940 年抗战态势（试点）',
+                meta: this.warPeriodAt()?.label || '抗战态势',
                 summary: '线为占领/使用示意，实际控制沿城市与据点；不是一条精确的控制边界。',
                 provenance: provenanceFor('war-rail'),
             }, { kind: 'line', id: `war-rail:${wr}` });
@@ -2287,21 +2287,30 @@ export class MapView {
         }
         ctx.restore();
     }
-    /** 1940 年抗战态势（试点）；图层不在这一年或没开就返回 null */
+    /** 1937–1945 抗战态势；图层不在这一段或没开就返回 null */
     warDocAt() {
         if (!this.layers.war)
             return null;
-        if (this.year < 1940 || this.year >= 1941)
+        if (this.year < 1937 || this.year >= 1946)
             return null;
         return this.geo?.war || null;
+    }
+    /** 当前年份落在哪一期（1937/1938/1940/1941/1944/1945），只用于图例与悬停文案 */
+    warPeriodAt() {
+        return this.geo?.war?.periods?.find((p) => this.year >= p.from && this.year < p.to) || null;
     }
     /** 把一个环画成闭合的二次贝塞尔曲线：每个顶点当控制点、边中点当端点，
      *  折线就变成圆滑的过渡（根据地是手绘示意面，没有笔直的边）。 */
     traceSmoothRing(ctx, ring, vw, vh) {
-        if (ring.length < 3)
+        // 数据里的环是首尾同点的闭合环；若把重复的末点也当顶点，
+        // 头尾相接处会退化成两段直线（控制点与端点重合）。先去掉重复末点。
+        const src = ring.length > 3 && ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1]
+            ? ring.slice(0, -1)
+            : ring;
+        if (src.length < 3)
             return;
-        const shift = this.worldShift(ring);
-        const pts = ring.map(([lng, lat]) => screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat)));
+        const shift = this.worldShift(src);
+        const pts = src.map(([lng, lat]) => screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat)));
         const mid = (a, b) => [
             (a[0] + b[0]) / 2,
             (a[1] + b[1]) / 2,
@@ -2316,7 +2325,7 @@ export class MapView {
         }
         ctx.closePath();
     }
-    /** 1940 年态势：伪政权名义辖区（低透明）+ 根据地示意面 + 占领城市 + 控制铁路 */
+    /** 抗战态势：伪政权名义辖区（低透明）+ 根据地示意面 + 占领城市 + 控制铁路 */
     drawWar(vw, vh) {
         const g = this.geo;
         const w = this.warDocAt();
@@ -3099,7 +3108,7 @@ export class MapView {
                 }
             }
         }
-        // 1940 抗战态势：沦陷城市、伪政权、根据地各给一组标签
+        // 抗战态势：沦陷城市、伪政权、根据地各给一组标签
         if (this.layers.war) {
             const w = this.warDocAt();
             if (w) {
