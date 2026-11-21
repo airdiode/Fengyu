@@ -758,8 +758,12 @@ export class MapView {
                     emit({
                         title: r.label,
                         kind: r.kindLabel || REGION_KIND_LABEL[r.kind],
-                        meta: `${r.from}–${r.to} 年`,
-                        summary: r.note,
+                        meta: r.id === 'tibet-1913'
+                            ? `${r.from}–${r.to} 年 · 与川边（西康）在金沙江以西交错`
+                            : `${r.from}–${r.to} 年`,
+                        summary: r.id === 'tibet-1913'
+                            ? `${r.note || ''} 与川边（西康）在金沙江以西交错：军阀图层上的川边色与本层竖纹重叠处，表示争议地带，不是两层控制。`
+                            : r.note,
                         provenance: provenanceFor(`region:${r.id}`),
                     }, { kind: 'area', id: `region:${r.id}` });
                     return;
@@ -1212,8 +1216,8 @@ export class MapView {
         this.drawGraticule(vw, vh);
         this.drawGeo(vw, vh);
         this.drawTaiping(vw, vh);
-        this.drawRegions(vw, vh);
         this.drawWarlords(vw, vh);
+        this.drawRegions(vw, vh);
         this.drawLeagues(vw, vh);
         this.drawClaimExtra(vw, vh);
         this.drawCessions(vw, vh);

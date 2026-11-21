@@ -104,7 +104,7 @@ async function boot() {
             .filter((b) => zones.blocs[b])
             .map((b) => `<span class="pk"><i style="background:${zones.blocs[b].color}"></i>${esc(zones.blocs[b].zh)}</span>`)
             .join('');
-        const html = `<b>${esc(period.label)}</b>${chips}<span class="pk-note">省级近似，斜线=争夺</span>`;
+        const html = `<b>${esc(period.label)}</b>${chips}<span class="pk-note">省级近似，斜线=争夺；川边（西康）与西藏噶厦在金沙江以西交错</span>`;
         powerKey.innerHTML = html;
         warlordKey.innerHTML = html;
         warlordKey.hidden = false;
