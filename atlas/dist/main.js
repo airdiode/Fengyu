@@ -87,7 +87,7 @@ async function boot() {
         warlordKey.innerHTML = '';
         // 军阀势力图例：只在 1916–1928、图层开着时显示；一期一组色块
         const zones = geoData?.warlordZones;
-        if (!zones || y < 1911 || y >= 1931)
+        if (!zones || y < 1911 || y >= 1938)
             return;
         if (!layerState['warlords'])
             return;
@@ -764,10 +764,7 @@ async function boot() {
             `<label class="layer-item layer-climate" title="把当年报灾的县点画在地图上（据《中国三千年气象记录总集》第四册，覆盖 1840–1911）">
       <input type="checkbox" data-climate="1" ${climateOn ? 'checked' : ''} />
       <i class="layer-swatch" style="background:#a8763a"></i>本年灾情县点
-    </label>` +
-            (y >= 1931 && y <= 1936
-                ? `<p class="layer-note">军阀势力止于 1930（中原大战）；1931 年后地方实力派仍在，尚未单独成层。</p>`
-                : '');
+    </label>`;
         layerBox.querySelectorAll('input').forEach((el) => {
             el.addEventListener('change', () => {
                 const input = el;
