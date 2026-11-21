@@ -1,6 +1,6 @@
 import { label, spanOf } from './types.js';
 import { numberBadge } from './numeric.js';
-import { countByType } from './search.js';
+import { countByEra, countByType } from './search.js';
 import { eraOf } from './reigns.js';
 import { categoryStyle, swatchSvg } from './event-category.js';
 import { resolveSources, sourceNote, sourceTitle } from './sources.js';
@@ -176,6 +176,9 @@ export class Panel {
     climate;
     /** 作者 → 作品（第一次打开人物页时才建） */
     worksIndex;
+    /** 最近一次打开的是谁：屏幕跨过 900px 断点时用它重画（2026-11-21，窄屏分段折叠） */
+    lastDetail = null;
+    narrowWas = null;
     /** 点关系 chip 时跳到另一个实体（由主程序接到 openEntity） */
     navigate = () => { };
     hoverBody;
@@ -223,10 +226,41 @@ export class Panel {
             this.panelEl.hidden = true;
         this.syncSide();
     }
+    /** 窄屏（手机与竖屏平板）才折叠；宽屏原样铺开 */
+    narrowMode() {
+        return (typeof window !== 'undefined' &&
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(max-width: 900px)').matches);
+    }
+    /**
+     * 分段折叠（2026-11-21）：窄屏上，详情卡的次要段落收进 <details>，
+     * 摘要与「硬数字」留在外面——手机上一屏能读到的东西，比能滚到的东西更重要。
+     * 标题用 <summary>，块内原来的 .block-title 在折叠态隐藏，免得写两遍。
+     */
+    fold(title, html) {
+        if (!html)
+            return '';
+        if (!this.narrowMode())
+            return html;
+        return `<details class="fold"><summary>${esc(title)}</summary>${html}</details>`;
+    }
+    /** 屏幕跨过断点（手机横竖切换、拉宽窗口）时重画当前详情 */
+    refreshFold() {
+        const n = this.narrowMode();
+        if (this.narrowWas === n || !this.lastDetail)
+            return;
+        const { id, back } = this.lastDetail;
+        if (back)
+            this.show(id, back);
+        else
+            this.show(id);
+    }
     show(id, back) {
         const e = this.byId.get(id);
         if (!e)
             return;
+        this.lastDetail = { id, back };
+        this.narrowWas = this.narrowMode();
         this.showPanel();
         const sp = spanOf(e);
         const span = sp ? (sp[0] === sp[1] ? `${Math.floor(sp[0])} 年` : `${Math.floor(sp[0])}–${Math.round(sp[1])} 年`) : '—';
@@ -377,16 +411,16 @@ export class Panel {
         ${e.summary ? `<p>${label(e.summary)}</p>` : ''}
         ${facts.join('')}
         ${this.personPointsBlock(e)}
-        ${this.visitsBlock(e)}
+        ${this.fold('可以去看看', this.visitsBlock(e))}
         ${extra.join('')}
-        ${this.worksBlock(e)}
-        ${this.relatedPeopleBlock(e)}
-        ${this.personNetworkBlock(e)}
-        ${this.adoptionBlock(e)}
-        ${this.metricsBlock(e)}
-        ${figures}
-        ${rels ? `<div>${rels}</div>` : ''}
-        ${this.refsBlock(e)}
+        ${this.fold('作品', this.worksBlock(e))}
+        ${this.fold('相关人物', this.relatedPeopleBlock(e))}
+        ${this.fold('关系网络', this.personNetworkBlock(e))}
+        ${this.fold('采用', this.adoptionBlock(e))}
+        ${this.fold('指标', this.metricsBlock(e))}
+        ${this.fold('图像与声音', figures)}
+        ${rels ? this.fold('相关', `<div>${rels}</div>`) : ''}
+        ${this.fold('参考', this.refsBlock(e))}
         <p class="meta">${e.id} · 点击地图空白处关闭 · <button type="button" class="feedback-link" data-id="${esc(e.id)}" data-label="${esc(label(e.labels))}">这一条有误？</button></p>
       </div>`;
         if (back)
@@ -801,18 +835,34 @@ export class Panel {
             });
             return;
         }
-        const chips = opts.onFilter ? resultChipsHtml(base, opts.activeType ?? null) : '';
+        const mode = opts.groupMode ?? 'type';
+        const modeBar = opts.onMode ? resultModeHtml(mode, base, base) : '';
+        const chips = opts.onMode
+            ? mode === 'era'
+                ? resultEraChipsHtml(base, opts.activeEra ?? null)
+                : resultChipsHtml(base, opts.activeType ?? null)
+            : '';
         const items = resultItemsHtml(hits, query, selected);
-        this.body.innerHTML = `${chips}<ul class="event-list result-list">${items}</ul><p class="result-total">${resultSummaryText(hits.length)}</p>`;
+        this.body.innerHTML = `${modeBar}${chips}<ul class="event-list result-list">${items}</ul><p class="result-total">${resultSummaryText(hits.length)}</p>`;
         this.body.querySelectorAll('.result-list li').forEach((li) => {
             li.addEventListener('click', () => onPick(li.dataset.id));
         });
         if (opts.onFilter) {
             this.body.querySelectorAll('.result-chip').forEach((btn) => {
                 btn.addEventListener('click', () => {
+                    if (mode === 'era') {
+                        const k = btn.dataset.era || '';
+                        opts.onEra?.(k || null);
+                        return;
+                    }
                     const t = btn.dataset.type || '';
                     opts.onFilter(t || null);
                 });
+            });
+        }
+        if (opts.onMode) {
+            this.body.querySelectorAll('.rg-btn').forEach((btn) => {
+                btn.addEventListener('click', () => opts.onMode(btn.dataset.mode));
             });
         }
     }
@@ -1036,6 +1086,27 @@ export function resultChipsHtml(base, active) {
     return `<div class="result-chips">${chip(null, `全部 ${base.length}`)}${counts
         .map((c) => chip(c.type, `${typeLabel(c.type)} ${c.count}`))
         .join('')}</div>`;
+}
+/** 结果顶部的年代分组条：全部 / 1839 及以前 / 1840 年代 … / 1950 及以后 / 无年份 */
+export function resultEraChipsHtml(base, active) {
+    const counts = countByEra(base);
+    if (counts.length < 2)
+        return '';
+    const chip = (key, text, title = '') => `<button type="button" class="chip result-chip${key === active ? ' active' : ''}" data-era="${key ?? ''}"${title ? ` title="${esc(title)}"` : ''}>${esc(text)}</button>`;
+    return `<div class="result-chips">${chip(null, `全部 ${base.length}`)}${counts
+        .map((c) => chip(c.key, `${c.label} ${c.count}`))
+        .join('')}</div>`;
+}
+/** 分组方式的切换：类型 / 年代（两组都只有一桶时不出） */
+export function resultModeHtml(mode, typeBase, eraBase) {
+    const canType = countByType(typeBase).length >= 2;
+    const canEra = countByEra(eraBase).length >= 2;
+    if (!canType && !canEra)
+        return '';
+    if (!canEra)
+        return '';
+    const btn = (m, text) => `<button type="button" class="rg-btn${m === mode ? ' active' : ''}" data-mode="${m}">${esc(text)}</button>`;
+    return `<div class="result-mode">按${btn('type', '类型')}${btn('era', '年代')}</div>`;
 }
 /** 结果条目（最多 80 条；摘要/正文命中附一行上下文） */
 export function resultItemsHtml(hits, query, selected) {

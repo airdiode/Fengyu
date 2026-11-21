@@ -1,5 +1,5 @@
 import { toHans } from './hans.js';
-import { label } from './types.js';
+import { label, spanOf } from './types.js';
 const TEXT_CACHE = new WeakMap();
 /** 参与匹配的标签文字（各语言）；别名单独算，得分低一档 */
 function textsOf(e) {
@@ -223,6 +223,42 @@ export function countByType(hits) {
     return [...m.entries()]
         .map(([type, count]) => ({ type, count }))
         .sort((a, b) => b.count - a.count || a.type.localeCompare(b.type));
+}
+/**
+ * 按「起始年」分桶：1840 年代…1940 年代，两头各留一个兜底桶。
+ * 为什么用起始年：一条事件/人物在检索结果里显示的年份就是它，分组跟显示保持一致；
+ * 跨十年的人（如 1895–1976）归到出生的那个十年，比按结束年更符合「他是哪个年代的人」。
+ */
+export function eraBucketOf(e) {
+    const sp = spanOf(e);
+    if (!sp)
+        return { key: 'none', label: '无年份', order: 13 };
+    const y = Math.floor(sp[0]);
+    if (y < 1840)
+        return { key: 'pre', label: '1839 年及以前', order: 0 };
+    if (y > 1949)
+        return { key: 'post', label: '1950 年及以后', order: 12 };
+    const decade = Math.floor(y / 10) * 10;
+    return { key: String(decade), label: `${decade} 年代`, order: 1 + (decade - 1840) / 10 };
+}
+/** 命中的年代分布：按年代先后排，同桶内不再排序（结果本身的顺序已经按分数） */
+export function countByEra(hits) {
+    const m = new Map();
+    for (const h of hits) {
+        const b = eraBucketOf(h.entity);
+        const cur = m.get(b.key);
+        if (cur)
+            cur.count++;
+        else
+            m.set(b.key, { ...b, count: 1 });
+    }
+    return [...m.values()].sort((a, b) => a.order - b.order);
+}
+/** 按年代桶过滤；null = 全部 */
+export function filterByEra(hits, key) {
+    if (!key)
+        return hits;
+    return hits.filter((h) => eraBucketOf(h.entity).key === key);
 }
 /**
  * 搜不到时的「相近条目」：不靠编辑距离，靠**二字组重合**。

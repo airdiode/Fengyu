@@ -5,7 +5,7 @@ import { Panel, esc } from './panel.js';
 import { Reader } from './reader.js';
 import { label, spanOf } from './types.js';
 import { CATEGORY_ORDER, EVENT_CATEGORY, swatchSvg } from './event-category.js';
-import { parseFilter, searchEntities, suggestSimilar } from './search.js';
+import { filterByEra, parseFilter, searchEntities, suggestSimilar } from './search.js';
 import { RECENT_KEY, parseRecent, pushRecent, serializeRecent } from './recent.js';
 import { applyDetail, applyYearLayers, ensureYearLayers, fetchDetailLayers, fetchYearLayers, GEO_LAYERS, layersAt, loadColonies, loadGeo, } from './geo-layers.js';
 import { MapOverlay } from './overlay.js';
@@ -326,9 +326,18 @@ async function boot() {
     let cursor = 0;
     /** 结果面板里点选类型后的过滤（null = 全部） */
     let hitType = null;
+    /** 结果分组方式：类型 / 年代（2026-11-21 加年代） */
+    let groupMode = 'type';
+    /** 按年代过滤（null = 全部） */
+    let hitEra = null;
     const renderHits = () => {
         const q = searchInput.value.trim();
-        hits = hitType ? baseHits.filter((h) => h.entity.type === hitType) : baseHits;
+        hits =
+            groupMode === 'era'
+                ? filterByEra(baseHits, hitEra)
+                : hitType
+                    ? baseHits.filter((h) => h.entity.type === hitType)
+                    : baseHits;
         cursor = 0;
         // 地图高亮最多 120 个点：全量高亮会拖慢重绘，而 120 个已经足够看出「命中的分布」
         map.setHighlight(baseHits.length ? baseHits.slice(0, 120).map((h) => h.entity.id) : null);
@@ -344,6 +353,19 @@ async function boot() {
                 hitType = t;
                 renderHits();
             },
+            groupMode,
+            activeEra: hitEra,
+            onMode: (m) => {
+                groupMode = m;
+                // 换一种分法就把另一种的筛选清掉，免得「切回类型」时还带着旧的年代条件
+                hitType = null;
+                hitEra = null;
+                renderHits();
+            },
+            onEra: (k) => {
+                hitEra = k;
+                renderHits();
+            },
             // 一条都没有时给相近条目：按名称/别名/标签的二字组兜底
             similar: baseHits.length ? [] : suggestSimilar(data.entities, q),
         });
@@ -354,6 +376,7 @@ async function boot() {
         // 上限 500：再大的词也不可能一屏读完；500 足够让类型计数与「共 N 条」有意义
         baseHits = searchEntities(data.entities, q, filter, 500);
         hitType = null;
+        hitEra = null;
         searching = baseHits.length > 0 || q.trim().length > 0;
         if (!searching) {
             map.setHighlight(null);
@@ -697,6 +720,8 @@ async function boot() {
         map.resize();
         timeline.resize();
         syncTopbarHeight();
+        // 跨过 900px 断点时重画详情卡：宽屏铺开、窄屏折叠（2026-11-21）
+        panel.refreshFold();
     });
     // 图层开关：只列当年有意义的图层（太平天国、行军箭头只在 1850–60 年代）
     const layerBox = document.getElementById('layer-list');
