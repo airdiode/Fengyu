@@ -503,6 +503,24 @@ figure.asset .prov { display: block; font-size: 10px; opacity: .8; }
 .layer-swatch { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
 #power-key { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 11px; color: #5b4a33; }
 #power-key:empty { display: none; }
+#power-key .pk { display: inline-flex; align-items: center; gap: 4px; }
+#power-key .pk i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+#power-key .pk-note { color: var(--muted); }
+
+/* 军阀势力图例：浮在地图左上，只在 1916–1928 且图层开着时出现 */
+#warlord-key {
+  position: absolute; left: 12px; top: 12px; z-index: 6; max-width: 220px;
+  display: flex; flex-wrap: wrap; gap: 2px 10px;
+  padding: 6px 9px; font-size: 11px; line-height: 1.65; color: #5b4a33;
+  background: rgba(255, 253, 247, .93); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+}
+#warlord-key[hidden] { display: none; }
+#warlord-key b { width: 100%; font-size: 11px; font-weight: 600; color: var(--seal); letter-spacing: .04em; }
+#warlord-key .pk { display: inline-flex; align-items: center; gap: 4px; }
+#warlord-key .pk i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+#warlord-key .pk-note { width: 100%; color: var(--muted); font-size: 10px; }
+@media (max-width: 640px) { #warlord-key { max-width: 160px; font-size: 10px; } }
 #line-key { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 11px; color: #5b4a33; }
 #line-key span { display: inline-flex; align-items: center; gap: 4px; }
 #line-key i { display: inline-block; width: 16px; height: 0; }

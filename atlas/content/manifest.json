@@ -1,10 +1,10 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-21T07:36:12.528Z",
+  "builtAt": "2026-11-21T11:30:27.781Z",
   "counts": {
     "event": 697,
     "person": 1285,
-    "organization": 47,
+    "organization": 57,
     "place": 65,
     "route": 64,
     "front": 10,
@@ -18,7 +18,7 @@
     "work": 33,
     "practice": 5
   },
-  "total": 2493,
+  "total": 2503,
   "shards": [
     {
       "key": "asset/0s",
@@ -550,8 +550,8 @@
     },
     {
       "key": "organization/1910s",
-      "entities": 3,
-      "bytes": 1925,
+      "entities": 10,
+      "bytes": 8349,
       "timeSpan": [
         1911,
         1916
@@ -559,10 +559,10 @@
     },
     {
       "key": "organization/1920s",
-      "entities": 3,
-      "bytes": 3241,
+      "entities": 6,
+      "bytes": 5870,
       "timeSpan": [
-        1925,
+        1924,
         1927
       ]
     },
@@ -665,7 +665,7 @@
     {
       "key": "person/1850s",
       "entities": 69,
-      "bytes": 60809,
+      "bytes": 60920,
       "timeSpan": [
         1805,
         1859
@@ -674,7 +674,7 @@
     {
       "key": "person/1860s",
       "entities": 75,
-      "bytes": 79660,
+      "bytes": 80128,
       "timeSpan": [
         1860,
         1869
@@ -683,7 +683,7 @@
     {
       "key": "person/1870s",
       "entities": 107,
-      "bytes": 114627,
+      "bytes": 114980,
       "timeSpan": [
         1870,
         1879
@@ -692,7 +692,7 @@
     {
       "key": "person/1880s",
       "entities": 138,
-      "bytes": 150165,
+      "bytes": 150931,
       "timeSpan": [
         1880,
         1889
@@ -701,7 +701,7 @@
     {
       "key": "person/1890s",
       "entities": 158,
-      "bytes": 158431,
+      "bytes": 158697,
       "timeSpan": [
         1890,
         1899
@@ -710,7 +710,7 @@
     {
       "key": "person/1900s",
       "entities": 229,
-      "bytes": 147676,
+      "bytes": 147728,
       "timeSpan": [
         1900,
         1909
@@ -1223,7 +1223,7 @@
     {
       "key": "theme/1920s",
       "entities": 2,
-      "bytes": 9483,
+      "bytes": 13114,
       "timeSpan": [
         1920,
         1921

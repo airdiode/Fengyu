@@ -93,6 +93,7 @@ export class MapView {
         yellowriver: true,
         taiping: true,
         march: true,
+        warlords: true,
     };
     /** 检索结果高亮：其余要素压暗，标签只画命中的 */
     highlight = null;
@@ -764,6 +765,28 @@ export class MapView {
                 }
             }
         }
+        // 2.7 军阀势力：放在列强/租界/傀儡政权之后，外国的面先命中；中国境内的省再按这个判定
+        if (g && this.layers.warlords && g.warlordZones) {
+            const period = this.warlordPeriod();
+            if (period) {
+                for (const prov of g.warlordZones.provinces) {
+                    const zone = prov.periods[period.id];
+                    if (!zone)
+                        continue;
+                    const shape = g.warlordProvinces.find((p) => p.id === prov.id);
+                    if (!shape || !pointInRings(lng, lat, shape.rings))
+                        continue;
+                    emit({
+                        title: `${prov.name} · ${zone.clique}`,
+                        kind: '军阀势力',
+                        meta: `${period.label} · ${period.from}–${period.to} 年${zone.contested ? ' · 争夺中' : ''}`,
+                        summary: `军政长官：${zone.leader}${zone.note ? `。${zone.note}` : ''}`,
+                        provenance: provenanceFor(`warlord:${prov.id}`),
+                    }, { kind: 'area', id: `warlord:${prov.id}` });
+                    return;
+                }
+            }
+        }
         // 1840 基线只认「线」：以前整块填色都算命中，鼠标在中国境内任何地方都会
         // 弹出「1840 实控基线」，把点选和空白点击都吃掉了。现在只在贴着边界线时才算。
         if (this.nearBaseBoundary(sx, sy, vw, vh)) {
@@ -1173,6 +1196,7 @@ export class MapView {
         this.drawGeo(vw, vh);
         this.drawTaiping(vw, vh);
         this.drawRegions(vw, vh);
+        this.drawWarlords(vw, vh);
         this.drawLeagues(vw, vh);
         this.drawClaimExtra(vw, vh);
         this.drawCessions(vw, vh);
@@ -2054,6 +2078,70 @@ export class MapView {
             ctx.clip(clip, 'evenodd');
         }
     }
+    /** 当前年份落在哪一期（1916–20 / 20–22 / 22–24 / 24–26 / 26–28） */
+    warlordPeriod() {
+        const z = this.geo?.warlordZones;
+        if (!z)
+            return null;
+        return z.periods.find((p) => this.year >= p.from && this.year < p.to) || null;
+    }
+    /**
+     * 军阀势力：按省级近似环上色，bloc 决定颜色；contested 的省用斜线压一层。
+     * 画在疆域之上、条约割让面/租界之下——外国的面比军阀的省更该先被看见。
+     */
+    drawWarlords(vw, vh) {
+        const g = this.geo;
+        if (!g || !this.layers.warlords || !g.warlordZones)
+            return;
+        const period = this.warlordPeriod();
+        if (!period)
+            return;
+        const ctx = this.ctx;
+        const byId = new Map(g.warlordProvinces.map((p) => [p.id, p]));
+        for (const prov of g.warlordZones.provinces) {
+            const zone = prov.periods[period.id];
+            if (!zone)
+                continue;
+            const shape = byId.get(prov.id);
+            if (!shape || shape.outside)
+                continue;
+            const color = g.warlordZones.blocs[zone.bloc]?.color || '#999';
+            // 多环的省（浙江、广东）只要有一环在视野里就画，不能只看第一环
+            const visible = shape.rings.some((r) => this.worldRing(r, vw, vh, this.worldShift(r)));
+            if (!visible)
+                continue;
+            ctx.save();
+            ctx.beginPath();
+            for (const ring of shape.rings) {
+                const s = this.worldShift(ring);
+                ring.forEach(([lng, lat], i) => {
+                    const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + s), mercY(lat));
+                    if (i === 0)
+                        ctx.moveTo(x, y);
+                    else
+                        ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+            }
+            ctx.globalAlpha = zone.contested ? 0.16 : 0.28;
+            ctx.fillStyle = color;
+            ctx.fill('evenodd');
+            if (zone.contested) {
+                const pattern = this.hatch(color);
+                if (pattern) {
+                    ctx.globalAlpha = 0.20;
+                    ctx.fillStyle = pattern;
+                    ctx.fill('evenodd');
+                }
+            }
+            ctx.globalAlpha = 0.55;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 0.9;
+            ctx.stroke();
+            ctx.restore();
+        }
+        ctx.globalAlpha = 1;
+    }
     /** 傀儡政权（满洲国）与卫星国（蒙古）：画在疆域之上，斜线表示实控 */
     drawRegions(vw, vh) {
         const g = this.geo;
@@ -2636,6 +2724,44 @@ export class MapView {
         if (!g)
             return out;
         const proj = (p) => screenOf(this.cam, vw, vh, mercX(p[0]), mercY(p[1]));
+        // 军阀势力的块名：同一 bloc 的省取标签点平均，一期一个名字（直系/奉系/…）。
+        // 优先级压在河流之上、实体之下：读得懂颜色，又不抢人名地名。
+        if (this.layers.warlords && g.warlordZones) {
+            const period = this.warlordPeriod();
+            if (period) {
+                const byId = new Map(g.warlordProvinces.map((p) => [p.id, p]));
+                const agg = new Map();
+                for (const prov of g.warlordZones.provinces) {
+                    const zone = prov.periods[period.id];
+                    if (!zone)
+                        continue;
+                    const shape = byId.get(prov.id);
+                    if (!shape || shape.outside)
+                        continue;
+                    const bloc = g.warlordZones.blocs[zone.bloc];
+                    if (!bloc)
+                        continue;
+                    const [x, y] = proj(shape.label);
+                    const cur = agg.get(zone.bloc) || { x: 0, y: 0, n: 0, zh: bloc.zh, color: bloc.color };
+                    cur.x += x;
+                    cur.y += y;
+                    cur.n += 1;
+                    agg.set(zone.bloc, cur);
+                }
+                for (const [bloc, a] of agg) {
+                    const x = a.x / a.n;
+                    const y = a.y / a.n;
+                    if (x < -40 || y < -20 || x > vw + 40 || y > vh + 20)
+                        continue;
+                    const id = `geo:warlord:${bloc}`;
+                    out.push({
+                        id,
+                        req: { id, text: a.zh, anchor: [x, y], priority: 230, center: true, layer: 'warlord' },
+                        meta: { font: 12, color: a.color, entity: '' },
+                    });
+                }
+            }
+        }
         if (this.layers.hydrology) {
             const seen = new Set();
             // 主体层现在只存东亚窗口外的河段（窗口内交给 10m 细节层），

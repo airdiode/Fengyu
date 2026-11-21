@@ -80,9 +80,34 @@ async function boot() {
         .catch(() => { });
     // 势力范围图例：只列这一年实际存在的列强
     const powerKey = document.getElementById('power-key');
-    const renderPowerKey = (_y) => {
-        // 殖民地不再着色（只留国名标注），色块图例会误导，直接不显示
+    const warlordKey = document.getElementById('warlord-key');
+    const renderPowerKey = (y) => {
         powerKey.innerHTML = '';
+        warlordKey.hidden = true;
+        warlordKey.innerHTML = '';
+        // 军阀势力图例：只在 1916–1928、图层开着时显示；一期一组色块
+        const zones = geoData?.warlordZones;
+        if (!zones || y < 1916 || y >= 1929)
+            return;
+        if (!layerState['warlords'])
+            return;
+        const period = zones.periods.find((p) => y >= p.from && y < p.to);
+        if (!period)
+            return;
+        const used = new Set();
+        for (const prov of zones.provinces) {
+            const z = prov.periods[period.id];
+            if (z)
+                used.add(z.bloc);
+        }
+        const chips = [...used]
+            .filter((b) => zones.blocs[b])
+            .map((b) => `<span class="pk"><i style="background:${zones.blocs[b].color}"></i>${esc(zones.blocs[b].zh)}</span>`)
+            .join('');
+        const html = `<b>${esc(period.label)}</b>${chips}<span class="pk-note">省级近似，斜线=争夺</span>`;
+        powerKey.innerHTML = html;
+        warlordKey.innerHTML = html;
+        warlordKey.hidden = false;
     };
     const panel = new Panel(document.getElementById('panel-head'), document.getElementById('panel-body'), data.byId, data.sources, document.getElementById('hover-body'), data.climate);
     // 专题读页：整块浮层，点条目进详情，返回时回到读页
@@ -751,6 +776,8 @@ async function boot() {
                 const key = input.dataset.layer;
                 layerState[key] = input.checked;
                 map.setLayer(key, input.checked);
+                if (key === 'warlords')
+                    renderPowerKey(year);
             });
         });
     };

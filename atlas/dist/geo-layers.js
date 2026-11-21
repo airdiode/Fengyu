@@ -8,6 +8,15 @@ export const GEO_LAYERS = [
     { key: 'admin1', name: '现代省界', hint: '现代行政区划，非历史政区', color: '#7a7a7a', on: true },
     { key: 'polities', name: '国名', hint: '周边国家按当时国名标注（俄国→苏联）', color: '#8d8471', on: true },
     { key: 'spheres', name: '势力范围', hint: '列强实控区域：殖民地与在华租借地', color: '#b07a8a', on: true },
+    {
+        key: 'warlords',
+        name: '军阀势力',
+        hint: '1916–1928 省级控制近似：按军政长官的派系上色，斜线=争夺；不是控制线',
+        color: '#7b6ba8',
+        on: true,
+        from: 1916,
+        to: 1929,
+    },
     { key: 'claims', name: '主张国境线', hint: '清朝（1840 年主张）/ 中华民国（1912、1946）的国境，虚线；与实控分开，可关', color: '#8a6a4a', on: true },
     {
         key: 'yellowriver',
@@ -54,7 +63,7 @@ export const GEO_LAYERS = [
 const emptyGeo = () => ({
     land: [], landDetail: [], lakesDetail: [], riversDetail: [], polities: [], powers: {}, spheres: [], concessions: [], regions: [], railways: [],
     claims: [], cessions: [], cessionLines: [], sphereLines: [], leagues: [], sealanes: [], southSea: null, yellowriver: [], taiping: [],
-    rivers: [], lakes: [], admin1: [], relief: [], wall: [], cities: [],
+    rivers: [], lakes: [], admin1: [], relief: [], wall: [], cities: [], warlordProvinces: [], warlordZones: null,
     loaded: new Set(),
 });
 /**
@@ -86,6 +95,8 @@ export const GEO_FILES = [
     'relief.json',
     'wall.json',
     'cities.json',
+    'warlord-provinces.json',
+    'warlord-zones.json',
 ];
 /**
  * 东亚细节层（10m 海岸线、小河、小湖）：**只在视野里看得到东亚时才取**。
@@ -217,7 +228,7 @@ export function applyDetail(geo, d) {
 }
 export async function loadGeo(base = 'public/geo') {
     const geo = emptyGeo();
-    const [land, polities, spheres, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities] = await Promise.all(GEO_FILES.map((name) => getJson(base, name)));
+    const [land, polities, spheres, sealanes, southSea, yellowDoc, rivers, lakes, admin1, relief, wall, cities, warlordProvinces, warlordZones] = await Promise.all(GEO_FILES.map((name) => getJson(base, name)));
     if (Array.isArray(land))
         geo.land = land;
     const polityDoc = polities;
@@ -254,6 +265,12 @@ export async function loadGeo(base = 'public/geo') {
     const wallDoc = wall;
     if (wallDoc?.lines)
         geo.wall = wallDoc.lines;
+    const wp = warlordProvinces;
+    if (wp?.units)
+        geo.warlordProvinces = wp.units;
+    const wz = warlordZones;
+    if (wz?.provinces)
+        geo.warlordZones = wz;
     return geo;
 }
 /**

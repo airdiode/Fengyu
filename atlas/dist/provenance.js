@@ -253,6 +253,12 @@ const TABLE = {
     ...CESSIONS,
     ...REGIONS,
 };
+const WARLORD = {
+    source: 'CHGIS V6 1911 府级界线（按 LEV1 合并的省级近似环）+ 各省军政长官任期表；1925 年与日本参谋本部《支那分争地图》（大正十四年十一月十二日调）对照',
+    method: '按该省军政长官（督军／督办／都统／省主席）的派系归属上色；五期快照，不是逐年控制线，也不代表省内没有别的军队',
+    precision: '省级（府级层合并、0.02° 简化）；用的是 1911 年府级界线，与 1916–28 年实际辖境有出入',
+    confidence: '中低：控制多为名义，标「争夺中」的省有交战或双重政权',
+};
 export function provenanceFor(id) {
     if (TABLE[id])
         return TABLE[id];
@@ -270,5 +276,7 @@ export function provenanceFor(id) {
         return CLAIM_EXTRA;
     if (id.startsWith('geo:'))
         return GEO;
+    if (id.startsWith('warlord:'))
+        return WARLORD;
     return undefined;
 }
