@@ -94,7 +94,7 @@ export function renderReader(t, byId) {
     return `<div class="rd">
   <header class="rd-head">
     <div class="rd-kicker">专题 · ${sections.length} 章 · ${total} 条${badges.size ? ` · 带数 ${badges.size} 条` : ''}</div>
-    <h1 class="rd-h1">${esc(label(t.labels))}</h1>
+    <h1 class="rd-h1">${esc(label(t.labels))}${t.isNew ? '<span class="theme-new rd-new">new</span>' : ''}</h1>
     ${t.question ? `<p class="rd-q">${esc(label(t.question))}</p>` : ''}
     ${t.summary ? `<p class="rd-lede-2">${esc(label(t.summary))}</p>` : ''}
     <div class="rd-meta">${esc(years)}${refs.length ? ` · 参考 ${refs.map(esc).join('、')}` : ''}</div>

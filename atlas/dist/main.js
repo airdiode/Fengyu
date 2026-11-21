@@ -250,7 +250,7 @@ async function boot() {
                 .map((g) => `<section class="theme-group">
           <h3 class="theme-group-title">${esc(g.title)}</h3>
           <ul class="theme-group-list">${g.themes
-                .map((t) => `<li><button type="button" class="theme-item" data-id="${t.id}">${esc(label(t.labels))}</button></li>`)
+                .map((t) => `<li><button type="button" class="theme-item" data-id="${t.id}">${esc(label(t.labels))}${t.isNew ? '<span class="theme-new">new</span>' : ''}</button></li>`)
                 .join('')}</ul>
         </section>`)
                 .join('') +

@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-21T07:16:08.533Z",
+  "builtAt": "2026-11-21T07:36:12.528Z",
   "counts": {
     "event": 697,
     "person": 1285,
@@ -1232,7 +1232,7 @@
     {
       "key": "theme/1930s",
       "entities": 4,
-      "bytes": 23046,
+      "bytes": 23085,
       "timeSpan": [
         1933,
         1938

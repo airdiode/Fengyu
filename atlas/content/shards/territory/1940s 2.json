@@ -1,1 +1,0 @@
-{"key":"territory/1940s","entities":[{"id":"territory.1945","type":"territory","labels":{"zh-Hans":"中华民国"},"time":{"kind":"interval","start":"1945","end":"1949","precision":"year"},"space":{"areas":[{"geometry":{"ref":"territories.json#1945"}}]},"sources":[{"ref":"source.legacy.territory"}],"summary":{"zh-Hans":"1945 年版图"},"tags":["疆域"]}]}
