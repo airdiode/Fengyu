@@ -97,6 +97,7 @@ async function boot() {
                     `<span class="pk"><i style="background:#8a3a2a"></i>日军控制铁路</span>` +
                     `<span class="pk"><i style="background:#7a4a3a"></i>伪政权名义辖区</span>` +
                     `<span class="pk"><i style="background:#4a6b3f"></i>抗日根据地</span>` +
+                    `<span class="pk"><i style="background:#4a6b8f"></i>国统区（大后方）</span>` +
                     `<span class="pk-note">城市/铁路为占领点线；伪政权辖区是名义范围；根据地是示意面。</span>`;
             warKey.hidden = false;
         }

@@ -710,12 +710,18 @@ export class MapView {
         // 4.0 伪政权 / 根据地：先于太平天国与列强势力范围
         const wa = this.warAreaAt(lng, lat);
         if (wa) {
-            const areaId = `war-${wa.kind}:${wa.p.id}`;
-            if (wa.p.entity) {
-                emit({ id: wa.p.entity }, { kind: 'area', id: areaId });
+            if (wa.kind === 'free') {
+                const f = wa.p;
+                emit({ id: 'organization.zhongguo-guomin-zhengfu' }, { kind: 'area', id: `war-free:${f.from}` });
+                return;
+            }
+            const item = wa.p;
+            const areaId = `war-${wa.kind}:${item.id}`;
+            if (item.entity) {
+                emit({ id: item.entity }, { kind: 'area', id: areaId });
             }
             else {
-                emit({ title: wa.p.label, kind: wa.kind === 'puppet' ? '伪政权' : '抗日根据地', summary: wa.p.note }, { kind: 'area', id: areaId });
+                emit({ title: item.label, kind: wa.kind === 'puppet' ? '伪政权' : '抗日根据地', summary: item.note }, { kind: 'area', id: areaId });
             }
             return;
         }
@@ -2247,6 +2253,12 @@ export class MapView {
             const b = g.war?.bases.find((x) => x.id === key && this.year >= x.from && this.year < x.to);
             return b?.rings || null;
         }
+        if (kind === 'war-free') {
+            const f = g.war?.free?.find((x) => String(x.from) === key && this.year >= x.from && this.year < x.to);
+            if (!f)
+                return null;
+            return [...f.core, ...f.partial].flatMap((pid) => g.warlordProvinces.find((x) => x.id === pid)?.rings || []);
+        }
         return null;
     }
     /**
@@ -2333,6 +2345,45 @@ export class MapView {
             return;
         const ctx = this.ctx;
         const prov = new Map(g.warlordProvinces.map((p) => [p.id, p]));
+        // 0. 国统区：大后方（实填）/ 部分沦陷（低透明 + 斜线），画在最底层
+        for (const f of w.free || []) {
+            if (this.year < f.from || this.year >= f.to)
+                continue;
+            const drawSet = (ids, alpha, hatch) => {
+                ctx.save();
+                ctx.beginPath();
+                for (const pid of ids) {
+                    const shape = prov.get(pid);
+                    if (!shape)
+                        continue;
+                    for (const ring of shape.rings) {
+                        const shift = this.worldShift(ring);
+                        ring.forEach(([lng, lat], i) => {
+                            const [x, y] = screenOf(this.cam, vw, vh, mercX(lng + shift), mercY(lat));
+                            if (i === 0)
+                                ctx.moveTo(x, y);
+                            else
+                                ctx.lineTo(x, y);
+                        });
+                        ctx.closePath();
+                    }
+                }
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#4a6b8f';
+                ctx.fill('evenodd');
+                if (hatch) {
+                    const pattern = this.hatch('#4a6b8f');
+                    if (pattern) {
+                        ctx.globalAlpha = 0.1;
+                        ctx.fillStyle = pattern;
+                        ctx.fill('evenodd');
+                    }
+                }
+                ctx.restore();
+            };
+            drawSet(f.core, 0.12, false);
+            drawSet(f.partial, 0.08, true);
+        }
         // 1. 伪政权：省级名义辖区，低透明 + 斜线 + 虚线边（实际控制只在点线）
         for (const p of w.puppets) {
             if (this.year < p.from || this.year >= p.to)
@@ -2484,6 +2535,15 @@ export class MapView {
                 const shape = g.warlordProvinces.find((x) => x.id === pid);
                 if (shape && pointInRings(lng, lat, shape.rings))
                     return { kind: 'puppet', p };
+            }
+        }
+        for (const f of w.free || []) {
+            if (this.year < f.from || this.year >= f.to)
+                continue;
+            for (const pid of [...f.core, ...f.partial]) {
+                const shape = g.warlordProvinces.find((x) => x.id === pid);
+                if (shape && pointInRings(lng, lat, shape.rings))
+                    return { kind: 'free', p: f };
             }
         }
         return null;
@@ -3123,6 +3183,34 @@ export class MapView {
                         id,
                         req: { id, text: c.name, anchor: [x, y], priority: 245, center: true, layer: 'war' },
                         meta: { font: 11, color: '#8a3a2a', entity: '' },
+                    });
+                }
+                for (const f of w.free || []) {
+                    if (this.year < f.from || this.year >= f.to)
+                        continue;
+                    let x = 0;
+                    let y = 0;
+                    let n = 0;
+                    for (const pid of f.core) {
+                        const shape = g.warlordProvinces.find((q) => q.id === pid);
+                        if (!shape)
+                            continue;
+                        const [px, py] = proj(shape.label);
+                        x += px;
+                        y += py;
+                        n += 1;
+                    }
+                    if (!n)
+                        continue;
+                    x /= n;
+                    y /= n;
+                    if (x < -40 || y < -20 || x > vw + 40 || y > vh + 20)
+                        continue;
+                    const id = `geo:war-free:${f.from}`;
+                    out.push({
+                        id,
+                        req: { id, text: '大后方', anchor: [x, y], priority: 225, center: true, layer: 'war' },
+                        meta: { font: 11, color: '#4a6b8f', entity: '' },
                     });
                 }
                 for (const b of w.bases) {
