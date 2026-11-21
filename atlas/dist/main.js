@@ -87,7 +87,7 @@ async function boot() {
         warlordKey.innerHTML = '';
         // 军阀势力图例：只在 1916–1928、图层开着时显示；一期一组色块
         const zones = geoData?.warlordZones;
-        if (!zones || y < 1916 || y >= 1931)
+        if (!zones || y < 1911 || y >= 1931)
             return;
         if (!layerState['warlords'])
             return;
