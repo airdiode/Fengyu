@@ -77,6 +77,8 @@ export class MapView {
     /** 1840 基线的治理分档与说明（base-1840.json 的 tiers / note） */
     baseTiers = [];
     baseNote = '';
+    /** 被用户关掉的实体类型（目前只有人物），不上图、不出标签、不进图例 */
+    hiddenTypes = new Set();
     layers = {
         graticule: true,
         tropic: true,
@@ -153,6 +155,14 @@ export class MapView {
         if (!(key in this.layers))
             return;
         this.layers[key] = on;
+        this.draw();
+    }
+    /** 内容开关：目前只用于「人物」；关掉后点、活动地、人物名一起隐藏 */
+    setTypeVisible(type, on) {
+        if (on)
+            this.hiddenTypes.delete(type);
+        else
+            this.hiddenTypes.add(type);
         this.draw();
     }
     /** 图层面板用：当前开关状态 */
@@ -1224,6 +1234,8 @@ export class MapView {
         for (const e of this.entities) {
             if (e.type !== 'route' && e.type !== 'front')
                 continue;
+            if (this.hiddenTypes.has(e.type))
+                continue;
             // 行军路线由 drawMarch 单独画（弧线 + 箭头），这里再画一遍就成了两条线
             if (e.type === 'route' && e.tags?.includes('行军'))
                 continue;
@@ -1309,6 +1321,8 @@ export class MapView {
         // 点：事件 / 组织 / 地点
         for (const e of this.entities) {
             if (e.type === 'route' || e.type === 'front')
+                continue;
+            if (this.hiddenTypes.has(e.type))
                 continue;
             const sp = spanOf(e);
             if (!sp)
@@ -3060,6 +3074,7 @@ export class MapView {
         const zoom = this.home.w / Math.max(1e-6, this.cam.w);
         const { reqs, meta } = collectLabels(this.entities, {
             year: this.year,
+            hiddenTypes: this.hiddenTypes,
             zoom,
             cam: this.cam,
             width: vw,

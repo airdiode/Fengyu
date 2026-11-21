@@ -98,7 +98,7 @@ function lineAngleAt(e, cam, vw, vh, anchor, year) {
     return Math.atan2(bestDy, bestDx);
 }
 export function collectLabels(entities, opts) {
-    const { year, zoom, cam, width, height, selectedId, onlyIds } = opts;
+    const { year, zoom, cam, width, height, selectedId, onlyIds, hiddenTypes } = opts;
     const meta = new Map();
     const reqs = [];
     const activeAt = (e) => {
@@ -143,6 +143,8 @@ export function collectLabels(entities, opts) {
     for (const e of entities) {
         const base = LABEL_RULE[e.type];
         if (!base)
+            continue;
+        if (hiddenTypes?.has(e.type))
             continue;
         // 未来不标；过去只淡显不标；当年 ±1 实显才标
         if (!activeAt(e))

@@ -783,6 +783,11 @@ async function boot() {
     };
     const layerToggle = document.getElementById('layer-toggle');
     const layerBoxEl = document.getElementById('layer-box');
+    // 内容开关：人物点与名一起显隐（图层面板里单独一行，不占 GeoData 的图层位）
+    layerBoxEl.querySelector('input[data-entity="person"]')?.addEventListener('change', (ev) => {
+        map.setTypeVisible('person', ev.target.checked);
+        renderLegend();
+    });
     const setLayerOpen = (open) => {
         layerBoxEl.hidden = !open;
         layerToggle.setAttribute('aria-expanded', String(open));
