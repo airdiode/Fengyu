@@ -2433,12 +2433,20 @@ export class MapView {
         }
         return null;
     }
-    /** 伪政权/根据地命中：返回类型与条目 */
+    /** 伪政权/根据地命中：返回类型与条目。
+     *  先判小块（根据地），再判大块（伪政权整省名义辖区）——否则华中根据地这种
+     *  落在汪伪省份里的小块永远点不到，只能点开汪伪。 */
     warAreaAt(lng, lat) {
         const g = this.geo;
         const w = this.warDocAt();
         if (!g || !w)
             return null;
+        for (const b of w.bases) {
+            if (this.year < b.from || this.year >= b.to)
+                continue;
+            if (pointInRings(lng, lat, b.rings))
+                return { kind: 'base', p: b };
+        }
         for (const p of w.puppets) {
             if (this.year < p.from || this.year >= p.to)
                 continue;
@@ -2447,12 +2455,6 @@ export class MapView {
                 if (shape && pointInRings(lng, lat, shape.rings))
                     return { kind: 'puppet', p };
             }
-        }
-        for (const b of w.bases) {
-            if (this.year < b.from || this.year >= b.to)
-                continue;
-            if (pointInRings(lng, lat, b.rings))
-                return { kind: 'base', p: b };
         }
         return null;
     }
