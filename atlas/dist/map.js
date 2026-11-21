@@ -2273,11 +2273,14 @@ export class MapView {
             });
             ctx.closePath();
         }
-        ctx.fillStyle = 'rgba(42,32,20,.16)';
+        const soft = this.hoverArea.startsWith('war-base:');
+        ctx.fillStyle = soft ? 'rgba(42,32,20,.1)' : 'rgba(42,32,20,.16)';
         ctx.fill('evenodd');
-        ctx.strokeStyle = 'rgba(58,42,24,.85)';
-        ctx.lineWidth = 1.8;
-        ctx.stroke();
+        if (!soft) {
+            ctx.strokeStyle = 'rgba(58,42,24,.85)';
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+        }
         ctx.restore();
     }
     /** 1940 年抗战态势（试点）；图层不在这一年或没开就返回 null */
@@ -2352,19 +2355,31 @@ export class MapView {
                 });
                 ctx.closePath();
             }
-            ctx.globalAlpha = 0.22;
+            // 根据地不是行政区：不描硬边。填充 + 几圈很淡的宽描边做过渡，
+            // 有 filter 的浏览器再叠一层模糊填充，边缘就化开了。
+            ctx.globalAlpha = 0.2;
             ctx.fillStyle = '#4a6b3f';
             ctx.fill('evenodd');
             const pattern = this.hatch('#4a6b3f');
             if (pattern) {
-                ctx.globalAlpha = 0.18;
+                ctx.globalAlpha = 0.14;
                 ctx.fillStyle = pattern;
                 ctx.fill('evenodd');
             }
-            ctx.globalAlpha = 0.8;
-            ctx.strokeStyle = '#4a6b3f';
-            ctx.lineWidth = 1.1;
-            ctx.stroke();
+            for (const [w, a] of [[12, 0.05], [7, 0.07], [3, 0.1]]) {
+                ctx.globalAlpha = a;
+                ctx.strokeStyle = '#4a6b3f';
+                ctx.lineWidth = w;
+                ctx.stroke();
+            }
+            const wctx = ctx;
+            if (typeof wctx.filter === 'string') {
+                wctx.filter = 'blur(6px)';
+                ctx.globalAlpha = 0.18;
+                ctx.fillStyle = '#4a6b3f';
+                ctx.fill('evenodd');
+                wctx.filter = 'none';
+            }
             ctx.restore();
         }
         // 3. 日军控制铁路：沿用路线几何，赭红虚线
