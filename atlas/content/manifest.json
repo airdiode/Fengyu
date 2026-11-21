@@ -1,9 +1,9 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-21T05:18:02.895Z",
+  "builtAt": "2026-11-21T05:29:53.568Z",
   "counts": {
     "event": 677,
-    "person": 1266,
+    "person": 1273,
     "organization": 47,
     "place": 65,
     "route": 50,
@@ -18,7 +18,7 @@
     "work": 33,
     "practice": 5
   },
-  "total": 2428,
+  "total": 2435,
   "shards": [
     {
       "key": "asset/0s",
@@ -656,7 +656,7 @@
     {
       "key": "person/1840s",
       "entities": 89,
-      "bytes": 66489,
+      "bytes": 66641,
       "timeSpan": [
         1840,
         1849
@@ -700,8 +700,8 @@
     },
     {
       "key": "person/1890s",
-      "entities": 148,
-      "bytes": 149586,
+      "entities": 151,
+      "bytes": 151169,
       "timeSpan": [
         1890,
         1899
@@ -709,8 +709,8 @@
     },
     {
       "key": "person/1900s",
-      "entities": 224,
-      "bytes": 144306,
+      "entities": 227,
+      "bytes": 145599,
       "timeSpan": [
         1900,
         1909
@@ -718,8 +718,8 @@
     },
     {
       "key": "person/1910s",
-      "entities": 199,
-      "bytes": 95739,
+      "entities": 200,
+      "bytes": 96128,
       "timeSpan": [
         1910,
         1919
@@ -1124,7 +1124,7 @@
     {
       "key": "theme/1800s",
       "entities": 1,
-      "bytes": 8133,
+      "bytes": 10724,
       "timeSpan": [
         1800,
         1800
@@ -1196,7 +1196,7 @@
     {
       "key": "theme/1900s",
       "entities": 6,
-      "bytes": 37765,
+      "bytes": 37174,
       "timeSpan": [
         1900,
         1902
