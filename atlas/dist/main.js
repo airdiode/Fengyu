@@ -764,7 +764,10 @@ async function boot() {
             `<label class="layer-item layer-climate" title="把当年报灾的县点画在地图上（据《中国三千年气象记录总集》第四册，覆盖 1840–1911）">
       <input type="checkbox" data-climate="1" ${climateOn ? 'checked' : ''} />
       <i class="layer-swatch" style="background:#a8763a"></i>本年灾情县点
-    </label>`;
+    </label>` +
+            (y >= 1931 && y <= 1936
+                ? `<p class="layer-note">军阀势力止于 1930（中原大战）；1931 年后地方实力派仍在，尚未单独成层。</p>`
+                : '');
         layerBox.querySelectorAll('input').forEach((el) => {
             el.addEventListener('change', () => {
                 const input = el;
