@@ -1,0 +1,1 @@
+{"key":"territory/1880s","entities":[{"id":"territory.1881","type":"territory","labels":{"zh-Hans":"清"},"time":{"kind":"interval","start":"1881","end":"1894","precision":"year"},"space":{"areas":[{"geometry":{"ref":"territories.json#1881"}}]},"sources":[{"ref":"source.legacy.territory"}],"summary":{"zh-Hans":"1881 年版图"},"tags":["疆域"]}]}

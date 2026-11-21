@@ -1,9 +1,9 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-21T04:14:27.968Z",
+  "builtAt": "2026-11-21T05:18:02.895Z",
   "counts": {
     "event": 677,
-    "person": 1139,
+    "person": 1266,
     "organization": 47,
     "place": 65,
     "route": 50,
@@ -11,14 +11,14 @@
     "territory": 26,
     "group": 43,
     "asset": 1,
-    "theme": 40,
+    "theme": 44,
     "technology": 16,
     "instrument": 6,
     "institution": 139,
     "work": 33,
     "practice": 5
   },
-  "total": 2297,
+  "total": 2428,
   "shards": [
     {
       "key": "asset/0s",
@@ -619,8 +619,8 @@
     },
     {
       "key": "person/1800s",
-      "entities": 12,
-      "bytes": 10529,
+      "entities": 13,
+      "bytes": 10960,
       "timeSpan": [
         1800,
         1809
@@ -628,8 +628,8 @@
     },
     {
       "key": "person/1810s",
-      "entities": 25,
-      "bytes": 28252,
+      "entities": 27,
+      "bytes": 29294,
       "timeSpan": [
         1810,
         1819
@@ -655,8 +655,8 @@
     },
     {
       "key": "person/1840s",
-      "entities": 86,
-      "bytes": 65230,
+      "entities": 89,
+      "bytes": 66489,
       "timeSpan": [
         1840,
         1849
@@ -664,8 +664,8 @@
     },
     {
       "key": "person/1850s",
-      "entities": 66,
-      "bytes": 59627,
+      "entities": 69,
+      "bytes": 60809,
       "timeSpan": [
         1805,
         1859
@@ -673,8 +673,8 @@
     },
     {
       "key": "person/1860s",
-      "entities": 71,
-      "bytes": 77992,
+      "entities": 75,
+      "bytes": 79660,
       "timeSpan": [
         1860,
         1869
@@ -700,8 +700,8 @@
     },
     {
       "key": "person/1890s",
-      "entities": 145,
-      "bytes": 147998,
+      "entities": 148,
+      "bytes": 149586,
       "timeSpan": [
         1890,
         1899
@@ -709,8 +709,8 @@
     },
     {
       "key": "person/1900s",
-      "entities": 196,
-      "bytes": 131329,
+      "entities": 224,
+      "bytes": 144306,
       "timeSpan": [
         1900,
         1909
@@ -718,8 +718,8 @@
     },
     {
       "key": "person/1910s",
-      "entities": 154,
-      "bytes": 75373,
+      "entities": 199,
+      "bytes": 95739,
       "timeSpan": [
         1910,
         1919
@@ -727,20 +727,20 @@
     },
     {
       "key": "person/1920s",
-      "entities": 3,
-      "bytes": 3311,
+      "entities": 33,
+      "bytes": 16634,
       "timeSpan": [
         1920,
-        1920
+        1929
       ]
     },
     {
       "key": "person/1930s",
-      "entities": 1,
-      "bytes": 490,
+      "entities": 9,
+      "bytes": 3876,
       "timeSpan": [
         1930,
-        1930
+        1936
       ]
     },
     {
@@ -1122,6 +1122,15 @@
       ]
     },
     {
+      "key": "theme/1800s",
+      "entities": 1,
+      "bytes": 8133,
+      "timeSpan": [
+        1800,
+        1800
+      ]
+    },
+    {
       "key": "theme/1830s",
       "entities": 1,
       "bytes": 5091,
@@ -1186,10 +1195,10 @@
     },
     {
       "key": "theme/1900s",
-      "entities": 3,
-      "bytes": 19167,
+      "entities": 6,
+      "bytes": 37765,
       "timeSpan": [
-        1901,
+        1900,
         1902
       ]
     },

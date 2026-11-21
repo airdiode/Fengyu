@@ -55,9 +55,21 @@ export const THEME_GROUPS = [
         ],
     },
     {
+        // 银幕与戏台：演的人、唱的人
+        title: '电影、戏剧与曲艺',
+        ids: ['theme.film-stars', 'theme.opera', 'theme.drama'],
+    },
+    {
         // 钱怎么变成学堂、人怎么出去读书、病怎么统计
         title: '教育与卫生',
-        ids: ['theme.xingxue', 'theme.daxue-xiaozhang', 'theme.gengkuan', 'theme.liumei-youtong', 'theme.jibing-yu-chengshi'],
+        ids: [
+            'theme.xingxue',
+            'theme.daxue-xiaozhang',
+            'theme.gengkuan',
+            'theme.liumei-youtong',
+            'theme.jibing-yu-chengshi',
+            'theme.translation',
+        ],
     },
     {
         // 读者自己走一遍的线

@@ -1,0 +1,1 @@
+{"key":"territory/1910s","entities":[{"id":"territory.1912","type":"territory","labels":{"zh-Hans":"中华民国"},"time":{"kind":"interval","start":"1912","end":"1930","precision":"year"},"space":{"areas":[{"geometry":{"ref":"territories.json#1912"}}]},"sources":[{"ref":"source.legacy.territory"}],"summary":{"zh-Hans":"1912 年版图"},"tags":["疆域"]}]}
