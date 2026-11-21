@@ -11,11 +11,11 @@ export const GEO_LAYERS = [
     {
         key: 'warlords',
         name: '军阀势力',
-        hint: '1916–1928 省级控制近似：按军政长官的派系上色，斜线=争夺；不是控制线',
+        hint: '1916–1930 省级控制近似：按军政长官的派系上色，斜线=争夺；不是控制线',
         color: '#7b6ba8',
         on: true,
         from: 1916,
-        to: 1929,
+        to: 1931,
     },
     { key: 'claims', name: '主张国境线', hint: '清朝（1840 年主张）/ 中华民国（1912、1946）的国境，虚线；与实控分开，可关', color: '#8a6a4a', on: true },
     {
