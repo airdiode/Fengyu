@@ -148,6 +148,19 @@ export const battleHtml = (b) => {
     rows.push(`<div class="battle-row"><b>结果</b>${esc(label(b.result))}</div>`);
     return `<div class="battle">${rows.join('')}</div>`;
 };
+/**
+ * 人物「科第与仕履」的 HTML（2026-11-22，§4.486）。
+ * 只两行：功名一行、仕履一行（多条用「·」隔开）；没有的字段不出行，免得出现空标签。
+ */
+export const careerHtml = (c) => {
+    const rows = [];
+    if (c.degree)
+        rows.push(`<div class="career-row"><b>科第</b>${esc(label(c.degree))}</div>`);
+    const posts = (c.postings || []).filter((p) => String(p).trim());
+    if (posts.length)
+        rows.push(`<div class="career-row"><b>仕履</b>${posts.map(esc).join(' · ')}</div>`);
+    return rows.length ? `<div class="career">${rows.join('')}</div>` : '';
+};
 /** 检索结果里的查询词高亮：只标第一处，够用且不会把整段刷满 */
 function mark(text, query) {
     const safe = esc(text);
@@ -316,6 +329,12 @@ export class Panel {
         // 战役：交战方、兵力、伤亡、结果（战争部分，2026-11-17 起）
         if (e.battle)
             facts.push(battleHtml(e.battle));
+        // 人物：科第与仕履（2026-11-22 起）
+        if (e.career) {
+            const c = careerHtml(e.career);
+            if (c)
+                facts.push(c);
+        }
         // 通商口岸：约开还是自开，依据哪一条约
         if (e.port) {
             const kind = e.port.kind === 'self' ? '自开商埠' : '约开商埠';

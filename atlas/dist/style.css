@@ -458,6 +458,14 @@ dialog.pop::backdrop { background: rgba(40, 30, 20, 0.45); }
 }
 .hazard b { color: #8a5410; }
 .hazard p { margin: 4px 0 0; font-size: 12px; color: #6b5a3a; }
+/* 人物科第与仕履（2026-11-22 起）：与战役块同一族，换成青灰以免与战事混淆 */
+.career {
+  margin: 8px 0; padding: 7px 9px; font-size: 12px; line-height: 1.7;
+  background: #eef2ee; border-left: 3px solid #4a6b5a; border-radius: 0 4px 4px 0;
+}
+.career-row { margin: 2px 0 0; color: #3d4a42; }
+.career-row b { font-weight: 600; color: #2f5245; margin-right: 6px; }
+
 /* 战役负载：交战方/兵力/伤亡/结果（战争部分，2026-11-17 起） */
 .battle {
   margin: 8px 0; padding: 7px 9px; font-size: 12px; line-height: 1.7;
