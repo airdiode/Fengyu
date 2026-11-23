@@ -41,6 +41,7 @@ export const THEME_GROUPS = [
             'theme.north-presidents',
             'theme.roc-power',
             'theme.warlords',
+            'theme.dangjun-zhengdun',
             'theme.roster-1949',
         ],
     },
