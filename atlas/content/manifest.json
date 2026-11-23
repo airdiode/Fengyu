@@ -1,10 +1,10 @@
 {
   "version": "0.1.0",
-  "builtAt": "2026-11-23T05:15:52.638Z",
+  "builtAt": "2026-11-23T13:32:32.449Z",
   "counts": {
-    "event": 767,
+    "event": 857,
     "person": 1293,
-    "organization": 72,
+    "organization": 74,
     "place": 65,
     "route": 72,
     "front": 32,
@@ -14,11 +14,11 @@
     "theme": 49,
     "technology": 17,
     "instrument": 6,
-    "institution": 153,
+    "institution": 154,
     "practice": 8,
     "work": 34
   },
-  "total": 2638,
+  "total": 2731,
   "shards": [
     {
       "key": "asset/0s",
@@ -103,8 +103,8 @@
     },
     {
       "key": "event/1910s",
-      "entities": 90,
-      "bytes": 71158,
+      "entities": 94,
+      "bytes": 78374,
       "timeSpan": [
         1910,
         1919
@@ -112,8 +112,8 @@
     },
     {
       "key": "event/1920s",
-      "entities": 87,
-      "bytes": 83451,
+      "entities": 91,
+      "bytes": 88128,
       "timeSpan": [
         1920,
         1929
@@ -121,8 +121,8 @@
     },
     {
       "key": "event/1930s",
-      "entities": 130,
-      "bytes": 152994,
+      "entities": 163,
+      "bytes": 191544,
       "timeSpan": [
         1930,
         1939
@@ -130,8 +130,8 @@
     },
     {
       "key": "event/1940s",
-      "entities": 123,
-      "bytes": 135011,
+      "entities": 172,
+      "bytes": 187056,
       "timeSpan": [
         1940,
         1949
@@ -341,7 +341,7 @@
     {
       "key": "institution/1870s",
       "entities": 7,
-      "bytes": 9309,
+      "bytes": 11001,
       "timeSpan": [
         1870,
         1878
@@ -350,7 +350,7 @@
     {
       "key": "institution/1880s",
       "entities": 14,
-      "bytes": 10359,
+      "bytes": 11735,
       "timeSpan": [
         1880,
         1888
@@ -394,8 +394,8 @@
     },
     {
       "key": "institution/1930s",
-      "entities": 21,
-      "bytes": 20387,
+      "entities": 22,
+      "bytes": 21285,
       "timeSpan": [
         1930,
         1938
@@ -562,8 +562,8 @@
     },
     {
       "key": "organization/1910s",
-      "entities": 10,
-      "bytes": 8349,
+      "entities": 11,
+      "bytes": 9080,
       "timeSpan": [
         1911,
         1916
@@ -580,8 +580,8 @@
     },
     {
       "key": "organization/1930s",
-      "entities": 10,
-      "bytes": 7402,
+      "entities": 11,
+      "bytes": 8277,
       "timeSpan": [
         1932,
         1939
